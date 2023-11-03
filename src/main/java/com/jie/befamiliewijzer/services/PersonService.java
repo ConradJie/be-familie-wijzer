@@ -18,7 +18,7 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public PersonDto findById(Integer id) {
+    public PersonDto getPerson(Integer id) {
         Optional<Person> personFound = personRepository.findById(id);
         if (personFound.isPresent()) {
             return transfer(personFound.get());
@@ -32,14 +32,14 @@ public class PersonService {
     }
 
 
-    public PersonDto create(PersonInputDto dto) {
+    public PersonDto createPerson(PersonInputDto dto) {
         Person person = transfer(dto);
         personRepository.save(person);
         return transfer(person);
     }
 
 
-    public PersonDto update(Integer id, PersonInputDto dto) {
+    public PersonDto updatePerson(Integer id, PersonInputDto dto) {
         Person person = personRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
@@ -50,7 +50,7 @@ public class PersonService {
         return transfer(person);
     }
 
-    public void delete(Integer id) {
+    public void deletePerson(Integer id) {
         if (personRepository.existsById(id)) {
             personRepository.deleteById(id);
         }
@@ -67,15 +67,6 @@ public class PersonService {
 
     private Person transfer(PersonInputDto dto) {
         Person person = new Person();
-        person.setGivenNames(dto.givenNames);
-        person.setSurname(dto.surname);
-        person.setSex(dto.sex);
-        return person;
-    }
-
-    private Person transfer(PersonDto dto) {
-        Person person = new Person();
-        person.setId(dto.id);
         person.setGivenNames(dto.givenNames);
         person.setSurname(dto.surname);
         person.setSex(dto.sex);
