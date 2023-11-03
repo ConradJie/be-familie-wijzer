@@ -33,7 +33,7 @@ public class Relation {
     }
 
     public void setChildId(Integer childId) {
-        childId = childId;
+        this.childId = childId;
     }
 
     public void setPersonId(Integer personId) {
