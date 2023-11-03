@@ -15,38 +15,39 @@ import java.util.List;
 public class PersonController {
     final private PersonService personService;
 
-    PersonController(PersonService personService) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
     }
 
     @GetMapping("/persons/{id}")
-    public ResponseEntity<PersonDto> findById(@PathVariable Integer id) {
-        return ResponseEntity.ok(personService.findById(id));
+    public ResponseEntity<PersonDto> getPerson(@PathVariable Integer id) {
+        return ResponseEntity.ok(personService.getPerson(id));
     }
 
     @GetMapping("/persons")
-    public ResponseEntity<List<PersonDto>> findAll() {
+    public ResponseEntity<List<PersonDto>> getAllpersons() {
         return ResponseEntity.ok(personService.findAll());
     }
+
     @PostMapping("/persons")
-    public ResponseEntity<Object> create(@Valid @RequestBody PersonInputDto personInputDto) {
-        PersonDto personDto = personService.create(personInputDto);
+    public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
+        PersonDto personDto = personService.createPerson(personInputDto);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/" + personDto.id).toUriString());
         return ResponseEntity.created(uri).body(personDto);
     }
 
-    @PatchMapping("/persons/{id}")
-    public ResponseEntity<Object> update(@PathVariable Integer id,
-                                         @Valid  @RequestBody PersonInputDto personInputDto) {
-        PersonDto dto = personService.update(id, personInputDto);
+    @PutMapping("/persons/{id}")
+    public ResponseEntity<Object> updatePerson(@PathVariable Integer id,
+                                         @Valid @RequestBody PersonInputDto personInputDto) {
+        PersonDto dto = personService.updatePerson(id, personInputDto);
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/persons/{id}")
-    public ResponseEntity<PersonDto> delete(@PathVariable Integer id) {
-        personService.delete(id);
+    public ResponseEntity<PersonDto> deletePerson(@PathVariable Integer id) {
+        personService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }
 
