@@ -27,7 +27,7 @@ public class PersonService {
         }
     }
 
-    public List<PersonDto> findAll() {
+    public List<PersonDto> getAllPersons() {
         return transfer(personRepository.findAll());
     }
 
