@@ -1,6 +1,7 @@
 package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.ChildDto;
+import com.jie.befamiliewijzer.dtos.ChildInputDto;
 import com.jie.befamiliewijzer.services.ChildService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,35 +19,35 @@ public class ChildController {
         this.childService = childService;
     }
 
-    @GetMapping("/children/{id}")
-    public ResponseEntity<ChildDto> getChild(@PathVariable Integer id) {
-        return ResponseEntity.ok(childService.getChild(id));
+    @GetMapping("/relations/{relationId}/children/{id}")
+    public ResponseEntity<ChildDto> getChildFromRelation(@PathVariable Integer relationId, @PathVariable Integer id) {
+        return ResponseEntity.ok(childService.getChildFromRelation(relationId, id));
     }
 
-    @GetMapping("/children")
-    public ResponseEntity<List<ChildDto>> getAlChildren() {
-        return ResponseEntity.ok(childService.getAllChildren());
+    @GetMapping("/relations/{relationId}/children")
+    public ResponseEntity<List<ChildDto>> getAlChildrenFromRelation(@PathVariable Integer relationId) {
+        return ResponseEntity.ok(childService.getAlChildrenFromRelation(relationId));
     }
 
-    @PostMapping("/children")
-    public ResponseEntity<Object> createChild(@Valid @RequestBody ChildDto dto) {
-        ChildDto childDto = childService.createChild(dto);
+    @PostMapping("/relations/{relationId}/children")
+    public ResponseEntity<Object> createChildFromRelation(@PathVariable Integer relationId, @Valid @RequestBody ChildInputDto dto) {
+        ChildDto childDto = childService.createChildFromRelation(relationId, dto);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/" + childDto.id).toUriString());
         return ResponseEntity.created(uri).body(childDto);
     }
 
-    @PostMapping("/children/{id}")
-    public ResponseEntity<Object> updateChild(@PathVariable Integer id,
-                                         @Valid @RequestBody ChildDto childDto) {
-        ChildDto dto = childService.updateChild(id, childDto);
+    @PostMapping("/relations/{relationId}/children/{id}")
+    public ResponseEntity<Object> updateChildFromRelation(@PathVariable Integer relationId, @PathVariable Integer id,
+                                                          @Valid @RequestBody ChildInputDto childInputDto) {
+        ChildDto dto = childService.updateChildFromRelastion(relationId, id, childInputDto);
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/children/{id}")
-    public ResponseEntity<ChildDto> deleteChild(@PathVariable Integer id) {
-        childService.deleteChild(id);
+    @DeleteMapping("/relations/{relationId}/children/{id}")
+    public ResponseEntity<ChildDto> deleteChildFromRelation(@PathVariable Integer relationId, @PathVariable Integer id) {
+        childService.deleteChildFromRelation(relationId, id);
         return ResponseEntity.noContent().build();
     }
 

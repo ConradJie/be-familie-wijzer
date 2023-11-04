@@ -6,5 +6,5 @@ public class RelationInputDto {
     @Positive
     public Integer personId;
     @Positive
-    public Integer spouceId;
+    public Integer spouseId;
 }

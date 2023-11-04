@@ -3,8 +3,13 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.dtos.PersonInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.models.Child;
+import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
+import com.jie.befamiliewijzer.models.Relation;
+import com.jie.befamiliewijzer.repositories.ChildRepository;
 import com.jie.befamiliewijzer.repositories.PersonRepository;
+import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,30 +19,39 @@ import java.util.Optional;
 @Service
 public class PersonService {
     private final PersonRepository personRepository;
-    public PersonService(PersonRepository personRepository) {
+    private final RelationRepository relationRepository;
+    private final RelationService relationService;
+    private final ChildService childService;
+    private final ChildRepository childRepository;
+
+    public PersonService(PersonRepository personRepository,
+                         RelationRepository relationRepository,
+                         RelationService relationService,
+                         ChildService childService,
+                         ChildRepository childRepository) {
         this.personRepository = personRepository;
+        this.relationRepository = relationRepository;
+        this.relationService = relationService;
+        this.childService = childService;
+        this.childRepository = childRepository;
     }
 
     public PersonDto getPerson(Integer id) {
-        Optional<Person> personFound = personRepository.findById(id);
-        if (personFound.isPresent()) {
-            return transfer(personFound.get());
-        } else {
-            throw new ResourceNotFoundException("The requested person could not be found");
-        }
+        Person person = personRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
+        return transfer(person);
     }
 
     public List<PersonDto> getAllPersons() {
         return transfer(personRepository.findAll());
     }
 
-
     public PersonDto createPerson(PersonInputDto dto) {
         Person person = transfer(dto);
         personRepository.save(person);
         return transfer(person);
     }
-
 
     public PersonDto updatePerson(Integer id, PersonInputDto dto) {
         Person person = personRepository
@@ -52,6 +66,24 @@ public class PersonService {
 
     public void deletePerson(Integer id) {
         if (personRepository.existsById(id)) {
+            //Detach spouces from person before deleting person
+            List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(id, id);
+            for (Relation relation : relations) {
+                if (relation.getPerson().getId() == id) {
+                    relation.setPerson(null);
+                } else if (relation.getSpouse().getId() == id) {
+                    relation.setSpouse(null);
+                }
+                relationRepository.save(relation);
+                if (relation.getPerson() == null && relation.getSpouse() == null) {
+                    relationService.deleteRelation(relation.getId());
+                }
+            }
+            Optional<Child> childOptional = childRepository.findByPersonId(id);
+            if (childOptional.isPresent()) {
+                childService.deleteChildFromRelation(childOptional.get().getRelation().getId(),
+                        childOptional.get().getId());
+            }
             personRepository.deleteById(id);
         }
     }

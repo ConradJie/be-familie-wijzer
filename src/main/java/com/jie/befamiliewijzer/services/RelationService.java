@@ -4,9 +4,11 @@ import com.jie.befamiliewijzer.dtos.RelationDto;
 import com.jie.befamiliewijzer.dtos.RelationInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
+import com.jie.befamiliewijzer.repositories.ChildRepository;
 import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.PersonRepository;
 import com.jie.befamiliewijzer.repositories.RelationRepository;
@@ -21,19 +23,22 @@ public class RelationService {
     private final RelationRepository relationRepository;
     private final PersonRepository personRepository;
     private final EventRepository eventRepository;
+    private final ChildRepository childRepository;
 
     public RelationService(RelationRepository relationRepository,
                            PersonRepository personRepository,
-                           EventRepository eventRepository) {
+                           EventRepository eventRepository,
+                           ChildRepository childRepository) {
         this.relationRepository = relationRepository;
         this.personRepository = personRepository;
         this.eventRepository = eventRepository;
+        this.childRepository = childRepository;
     }
 
     public RelationDto getRelation(Integer id) {
-        Optional<Relation> relationFound = relationRepository.findById(id);
-        if (relationFound.isPresent()) {
-            return transfer(relationFound.get());
+        Optional<Relation> relationOptional = relationRepository.findById(id);
+        if (relationOptional.isPresent()) {
+            return transfer(relationOptional.get());
         } else {
             throw new ResourceNotFoundException("The requested relation could not be found");
         }
@@ -47,10 +52,10 @@ public class RelationService {
 
     public RelationDto createRelation(RelationInputDto dto) {
         if ((dto.personId == null || !personRepository.existsById(dto.personId))
-                && (dto.spouceId == null || !personRepository.existsById(dto.spouceId))) {
+                && (dto.spouseId == null || !personRepository.existsById(dto.spouseId))) {
             throw new ResourceNotFoundException("The person(s) do not exists");
         }
-        List<Relation> relations = relationRepository.findAllByPersonIdAndSpouceId(dto.personId, dto.spouceId);
+        List<Relation> relations = relationRepository.findAllByPersonIdAndSpouseId(dto.personId, dto.spouseId);
         if (!relations.isEmpty()) {
             boolean divorced = false;
             for (Relation relation : relations) {
@@ -70,16 +75,25 @@ public class RelationService {
     }
 
     public RelationDto updateRelation(Integer id, RelationInputDto dto) {
-        Relation relation = relationRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
-        relation = transfer(dto);
+        if (!relationRepository.existsById(id)) {
+            throw new ResourceNotFoundException("The requested relation could not be found");
+        }
+        Relation relation = transfer(dto);
         relationRepository.save(relation);
         return transfer(relation);
     }
 
     public void deleteRelation(Integer id) {
         if (relationRepository.existsById(id)) {
+            //Detach person, spouse and children from relation before deleting relation
+            Relation relation = relationRepository.findById(id).get();
+            relation.setPerson(null);
+            relation.setSpouse(null);
+            for (Child child : relation.getChildren()) {
+                child.setPerson(null);
+                childRepository.save(child);
+            }
+            relationRepository.save(relation);
             relationRepository.deleteById(id);
         }
     }
@@ -88,7 +102,7 @@ public class RelationService {
         RelationDto dto = new RelationDto();
         dto.id = relation.getId();
         dto.personId = relation.getPerson().getId();
-        dto.spouceId = relation.getSpouce().getId();
+        dto.spouseId = relation.getSpouse().getId();
         return dto;
     }
 
@@ -108,10 +122,10 @@ public class RelationService {
                 relation.setPerson(personOptional.get());
             }
         }
-        if (dto.spouceId != null) {
-            Optional<Person> personOptional = personRepository.findById(dto.spouceId);
+        if (dto.spouseId != null) {
+            Optional<Person> personOptional = personRepository.findById(dto.spouseId);
             if (personOptional.isPresent()) {
-                relation.setSpouce(personOptional.get());
+                relation.setSpouse(personOptional.get());
             }
         }
         return relation;

@@ -1,8 +1,10 @@
 package com.jie.befamiliewijzer.services;
 
 import com.jie.befamiliewijzer.dtos.ChildDto;
+import com.jie.befamiliewijzer.dtos.ChildInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Child;
+import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.ChildRepository;
@@ -26,49 +28,65 @@ public class ChildService {
         this.relationRepository = relationRepository;
     }
 
-    public ChildDto getChild(Integer id) {
-        Optional<Child> childOptional = childRepository.findById(id);
-        if (childOptional.isPresent()) {
-            return transfer(childOptional.get());
-        } else {
-            throw new ResourceNotFoundException("The requested child could not be found");
+    public ChildDto getChildFromRelation(Integer relationId, Integer id) {
+        Child child = childRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested child could not be found"));
+        if (child.getRelation().getId() != relationId) {
+            throw new ResourceNotFoundException("The requested relation could not be found");
         }
+        return transfer(child);
     }
 
-    public List<ChildDto> getAllChildren() {
-        return transfer(childRepository.findAll());
+    public List<ChildDto> getAlChildrenFromRelation(Integer relationId) {
+//        return transfer(childRepository.findAllByRelationId(relationId));
+        List<Child> list = childRepository.findAllByRelationId(relationId);
+        return transfer(childRepository.findAllByRelationId(relationId));
     }
 
 
-    public ChildDto createChild(ChildDto dto) {
+    public ChildDto createChildFromRelation(Integer relationId, ChildInputDto dto) {
+        if (relationId != dto.relationId || !relationRepository.existsById(relationId)) {
+            throw new ResourceNotFoundException("The requested relation could not be found");
+        }
+        if (childRepository.existsByRelation_IdAndPersonId(relationId,dto.personId)) {
+            throw new ResourceNotFoundException("This child already exists");
+        }
         Child child = transfer(dto);
         childRepository.save(child);
         return transfer(child);
     }
 
 
-    public ChildDto updateChild(Integer id, ChildDto dto) {
+    public ChildDto updateChildFromRelastion(Integer relationId, Integer id, ChildInputDto dto) {
+        if (relationId != dto.relationId || !relationRepository.existsById(relationId)) {
+            throw new ResourceNotFoundException("The requested relation could not be found");
+        }
         Child child = childRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested child could not be found"));
         if (dto.personId != null) {
-            Optional<Person> personOptional = personRepository.findById(dto.personId);
-            if (personOptional.isPresent()) {
-                child.setPerson(personOptional.get());
-            }
+            Person person = personRepository
+                    .findById(dto.personId)
+                    .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
+            child.setPerson(person);
+        } else {
+            child.setPerson(null);
         }
-        if (dto.relationId != null) {
-            Optional<Relation> relationOptional = relationRepository.findById(dto.relationId);
-            if (relationOptional.isPresent()) {
-                child.setRelation(relationOptional.get());
-            }
-        }
+        childRepository.save(child);
         return transfer(child);
     }
 
-    public void deleteChild(Integer id) {
+    public void deleteChildFromRelation(Integer relationId, Integer id) {
         if (childRepository.existsById(id)) {
-            childRepository.deleteById(id);
+            Child child = childRepository.findById(id).get();
+            if (relationId == child.getRelation().getId()) {
+                //Detach person and relation from child before deleting relation
+                child.setPerson(null);
+                child.setRelation(null);
+                childRepository.save(child);
+                childRepository.deleteById(id);
+            }
         }
     }
 
@@ -80,9 +98,8 @@ public class ChildService {
         return dto;
     }
 
-    private Child transfer(ChildDto dto) {
+    private Child transfer(ChildInputDto dto) {
         Child child = new Child();
-        child.setId(dto.id);
         if (dto.personId != null) {
             Optional<Person> personOptional = personRepository.findById(dto.personId);
             if (personOptional.isPresent()) {

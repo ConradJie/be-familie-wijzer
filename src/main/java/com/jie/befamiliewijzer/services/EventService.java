@@ -34,6 +34,7 @@ public class EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
         return transfer(event);
     }
+
     public EventDto getEventFromRelation(Integer relationId, Integer id) {
         Event event = eventRepository
                 .findByRelationIdAndId(relationId, id)
@@ -48,11 +49,10 @@ public class EventService {
             throw new ResourceNotFoundException("The requested person could not be found");
         }
     }
+
     public List<EventDto> getAllEventsFromRelation(Integer relationId) {
         if (relationRepository.existsById(relationId)) {
-//            return transfer(eventRepository.findEventsByRelationId(relationId));
-            List<Event> list = eventRepository.findEventsByRelationId(relationId);
-            return transfer(list);
+            return transfer(eventRepository.findEventsByRelationId(relationId));
         } else {
             throw new ResourceNotFoundException("The requested relation could not be found");
         }
@@ -94,6 +94,7 @@ public class EventService {
         eventRepository.save(event);
         return transfer(event);
     }
+
     public EventDto updateEventFromRelation(Integer relationId, Integer id, EventInputDto dto) {
         Relation relation = relationRepository
                 .findById(relationId)
@@ -113,9 +114,16 @@ public class EventService {
 
     public void deleteEventFromPerson(Integer personId, Integer id) {
         if (personRepository.existsById(personId) && eventRepository.existsById(id)) {
+            //Detach person from event before deleting event
+            Event event = eventRepository
+                    .findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
+            event.setPerson(null);
+            eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
+
     public void deleteEventFromRelation(Integer relationId, Integer id) {
         if (relationRepository.existsById(relationId) && eventRepository.existsById(id)) {
             eventRepository.deleteById(id);

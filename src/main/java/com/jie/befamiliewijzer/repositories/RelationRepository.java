@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface RelationRepository extends JpaRepository<Relation,Integer> {
-    Optional<Relation> findByPersonIdAndSpouceId(Integer personId, Integer spouceId);
-    List<Relation> findAllByPersonIdAndSpouceId(Integer personId, Integer spouceId);
+    Optional<Relation> findByPersonIdAndSpouseId(Integer personId, Integer spouseId);
+    List<Relation> findAllByPersonIdOrSpouseId(Integer personId,Integer spouseId);
+    List<Relation> findAllByPersonIdAndSpouseId(Integer personId, Integer spouseId);
 }

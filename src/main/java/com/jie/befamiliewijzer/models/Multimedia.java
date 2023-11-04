@@ -12,7 +12,7 @@ public class Multimedia {
     private String description;
     @Column(length = 128)
     private String filename;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id")
     Event event;
 
