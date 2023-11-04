@@ -2,6 +2,8 @@ package com.jie.befamiliewijzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Set;
@@ -12,35 +14,36 @@ public class Relation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToMany(mappedBy = "relation")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "relation", cascade = CascadeType.ALL)
     @JsonIgnore
     Set<Child> children;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id")
     Person person;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "spouce_id")
-    Person spouce;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "spouse_id")
+    Person spouse;
 
-    @OneToMany(mappedBy = "relation")
+    @OneToMany(mappedBy = "relation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     List<Event> events;
 
-    public Integer getId() {
-        return id;
-    }
-
+    @OneToMany(mappedBy = "relation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<Child> getChildren() {
         return children;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public Person getPerson() {
         return person;
     }
 
-    public Person getSpouce() {
-        return spouce;
+    public Person getSpouse() {
+        return spouse;
     }
 
     public List<Event> getEvents() {
@@ -59,8 +62,8 @@ public class Relation {
         this.person = person;
     }
 
-    public void setSpouce(Person spouce) {
-        this.spouce = spouce;
+    public void setSpouse(Person spouse) {
+        this.spouse = spouse;
     }
 
     public void setEvents(List<Event> events) {
