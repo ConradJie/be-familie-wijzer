@@ -4,56 +4,120 @@ import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Event;
+import com.jie.befamiliewijzer.models.Person;
+import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.EventRepository;
+import com.jie.befamiliewijzer.repositories.PersonRepository;
+import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final PersonRepository personRepository;
+    private final RelationRepository relationRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository,
+                        PersonRepository personRepository,
+                        RelationRepository relationRepository) {
         this.eventRepository = eventRepository;
+        this.personRepository = personRepository;
+        this.relationRepository = relationRepository;
     }
 
-    public EventDto getEvent(Integer id) {
-        Optional<Event> eventOptional = eventRepository.findById(id);
-        if (eventOptional.isPresent()) {
-            return transfer(eventOptional.get());
+    public EventDto getEventFromPerson(Integer personId, Integer id) {
+        Event event = eventRepository
+                .findByPersonIdAndId(personId, id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
+        return transfer(event);
+    }
+    public EventDto getEventFromRelation(Integer relationId, Integer id) {
+        Event event = eventRepository
+                .findByRelationIdAndId(relationId, id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
+        return transfer(event);
+    }
+
+    public List<EventDto> getAllEventsFromPerson(Integer personId) {
+        if (personRepository.existsById(personId)) {
+            return transfer(eventRepository.findEventsByPersonId(personId));
         } else {
-            throw new ResourceNotFoundException("The requested event could not be found");
+            throw new ResourceNotFoundException("The requested person could not be found");
+        }
+    }
+    public List<EventDto> getAllEventsFromRelation(Integer relationId) {
+        if (relationRepository.existsById(relationId)) {
+//            return transfer(eventRepository.findEventsByRelationId(relationId));
+            List<Event> list = eventRepository.findEventsByRelationId(relationId);
+            return transfer(list);
+        } else {
+            throw new ResourceNotFoundException("The requested relation could not be found");
         }
     }
 
-    public List<EventDto> getAllEvents() {
-        return transfer(eventRepository.findAll());
-    }
-
-
-    public EventDto createEvent(EventInputDto dto) {
+    public EventDto createEventFromPerson(Integer personId, EventInputDto dto) {
+        Person person = personRepository
+                .findById(personId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
         Event event = transfer(dto);
+        event.setPerson(person);
         eventRepository.save(event);
         return transfer(event);
     }
 
+    public EventDto createEventFromRelation(Integer relationId, EventInputDto dto) {
+        Relation relation = relationRepository
+                .findById(relationId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        Event event = transfer(dto);
+        event.setRelation(relation);
+        eventRepository.save(event);
+        return transfer(event);
+    }
 
-    public EventDto updateEvent(Integer id, EventInputDto dto) {
+    public EventDto updateEventFromPerson(Integer personId, Integer id, EventInputDto dto) {
+        Person person = personRepository
+                .findById(personId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
         Event event = eventRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
+                .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
         event.setEventType(dto.eventType);
         event.setDescription(dto.description);
+        event.setText(dto.text);
         event.setBeginDate(dto.beginDate);
         event.setEndDate(dto.endDate);
+        event.setPerson(person);
+        eventRepository.save(event);
+        return transfer(event);
+    }
+    public EventDto updateEventFromRelation(Integer relationId, Integer id, EventInputDto dto) {
+        Relation relation = relationRepository
+                .findById(relationId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        Event event = eventRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
+        event.setEventType(dto.eventType);
+        event.setDescription(dto.description);
+        event.setText(dto.text);
+        event.setBeginDate(dto.beginDate);
+        event.setEndDate(dto.endDate);
+        event.setRelation(relation);
         eventRepository.save(event);
         return transfer(event);
     }
 
-    public void deleteEvent(Integer id) {
-        if (eventRepository.existsById(id)) {
+    public void deleteEventFromPerson(Integer personId, Integer id) {
+        if (personRepository.existsById(personId) && eventRepository.existsById(id)) {
+            eventRepository.deleteById(id);
+        }
+    }
+    public void deleteEventFromRelation(Integer relationId, Integer id) {
+        if (relationRepository.existsById(relationId) && eventRepository.existsById(id)) {
             eventRepository.deleteById(id);
         }
     }
@@ -66,6 +130,12 @@ public class EventService {
         dto.text = event.getText();
         dto.beginDate = event.getBeginDate();
         dto.endDate = event.getEndDate();
+        if (event.getPerson() != null) {
+            dto.personId = event.getPerson().getId();
+        }
+        if (event.getRelation() != null) {
+            dto.relationId = event.getRelation().getId();
+        }
         return dto;
     }
 
@@ -73,6 +143,7 @@ public class EventService {
         Event event = new Event();
         event.setEventType(dto.eventType);
         event.setDescription(dto.description);
+        event.setText(dto.text);
         event.setBeginDate(dto.beginDate);
         event.setEndDate(dto.endDate);
         return event;

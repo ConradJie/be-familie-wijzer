@@ -9,4 +9,6 @@ public class EventDto {
     public String text;
     public Date beginDate;
     public Date endDate;
+    public Integer personId;
+    public Integer relationId;
 }

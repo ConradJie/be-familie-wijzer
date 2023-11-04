@@ -3,7 +3,11 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.ChildDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Child;
+import com.jie.befamiliewijzer.models.Person;
+import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.ChildRepository;
+import com.jie.befamiliewijzer.repositories.PersonRepository;
+import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,14 +17,19 @@ import java.util.Optional;
 @Service
 public class ChildService {
     private final ChildRepository childRepository;
-    public ChildService(ChildRepository childRepository) {
+    private final PersonRepository personRepository;
+    private final RelationRepository relationRepository;
+
+    public ChildService(ChildRepository childRepository, PersonRepository personRepository, RelationRepository relationRepository) {
         this.childRepository = childRepository;
+        this.personRepository = personRepository;
+        this.relationRepository = relationRepository;
     }
 
     public ChildDto getChild(Integer id) {
-        Optional<Child> childFound = childRepository.findById(id);
-        if (childFound.isPresent()) {
-            return transfer(childFound.get());
+        Optional<Child> childOptional = childRepository.findById(id);
+        if (childOptional.isPresent()) {
+            return transfer(childOptional.get());
         } else {
             throw new ResourceNotFoundException("The requested child could not be found");
         }
@@ -42,8 +51,18 @@ public class ChildService {
         Child child = childRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested child could not be found"));
-        child.setPersonId(dto.personId);
-        child.setPersonId(dto.relationId);
+        if (dto.personId != null) {
+            Optional<Person> personOptional = personRepository.findById(dto.personId);
+            if (personOptional.isPresent()) {
+                child.setPerson(personOptional.get());
+            }
+        }
+        if (dto.relationId != null) {
+            Optional<Relation> relationOptional = relationRepository.findById(dto.relationId);
+            if (relationOptional.isPresent()) {
+                child.setRelation(relationOptional.get());
+            }
+        }
         return transfer(child);
     }
 
@@ -56,16 +75,26 @@ public class ChildService {
     private ChildDto transfer(Child child) {
         ChildDto dto = new ChildDto();
         dto.id = child.getId();
-        dto.personId = child.getPersonId();
-        dto.relationId = child.getRelationId();
+        dto.personId = child.getPerson().getId();
+        dto.relationId = child.getRelation().getId();
         return dto;
     }
 
     private Child transfer(ChildDto dto) {
         Child child = new Child();
         child.setId(dto.id);
-        child.setPersonId(dto.personId);
-        child.setRelationId(dto.relationId);
+        if (dto.personId != null) {
+            Optional<Person> personOptional = personRepository.findById(dto.personId);
+            if (personOptional.isPresent()) {
+                child.setPerson(personOptional.get());
+            }
+        }
+        if (dto.relationId != null) {
+            Optional<Relation> relationOptional = relationRepository.findById(dto.relationId);
+            if (relationOptional.isPresent()) {
+                child.setRelation(relationOptional.get());
+            }
+        }
         return child;
     }
 
