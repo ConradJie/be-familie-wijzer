@@ -1,8 +1,10 @@
 package com.jie.befamiliewijzer.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -20,6 +22,17 @@ public class Event {
     private Date beginDate;
     @Column(name = "end_date")
     private Date endDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "person_id")
+    Person person;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "relation_id")
+    Relation relation;
+
+    @OneToMany(mappedBy = "event")
+    @JsonIgnore
+    List<Multimedia> multimedias;
 
     public Integer getId() {
         return id;
@@ -45,6 +58,18 @@ public class Event {
         return endDate;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
+    public Relation getRelation() {
+        return relation;
+    }
+
+    public List<Multimedia> getMultimedias() {
+        return multimedias;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -67,5 +92,17 @@ public class Event {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public void setRelation(Relation relation) {
+        this.relation = relation;
+    }
+
+    public void setMultimedias(List<Multimedia> multimedias) {
+        this.multimedias = multimedias;
     }
 }

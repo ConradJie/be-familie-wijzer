@@ -18,35 +18,40 @@ public class MultimediaController {
     public MultimediaController(MultimediaService multimediaService) {
         this.multimediaService = multimediaService;
     }
-    @GetMapping("/multimedias/{id}")
-    public ResponseEntity<MultimediaDto> getMultimedia(@PathVariable Integer id) {
-        return ResponseEntity.ok(multimediaService.getMultimedia(id));
+
+    @GetMapping("/events/{eventId}/multimedias/{id}")
+    public ResponseEntity<MultimediaDto> getMultimedia(@PathVariable Integer eventId, @PathVariable Integer id) {
+        return ResponseEntity.ok(multimediaService.getMultimediaFromEvent(eventId, id));
     }
 
-    @GetMapping("/multimedias")
-    public ResponseEntity<List<MultimediaDto>> getAllMultimedias() {
-        return ResponseEntity.ok(multimediaService.getAllMultimedias());
+    @GetMapping("/events/{eventId}/multimedias")
+    public ResponseEntity<List<MultimediaDto>> getAllMultimediasFromEvent(@PathVariable Integer eventId) {
+//        return ResponseEntity.ok(multimediaService.getAllMultimediasFromEvent(eventId));
+        List<MultimediaDto> list = multimediaService.getAllMultimediasFromEvent(eventId);
+        return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/multimedias")
-    public ResponseEntity<Object> createPerson(@Valid @RequestBody MultimediaInputDto multimediaInputDto) {
-        MultimediaDto multimediaDto = multimediaService.createMultimedia(multimediaInputDto);
+    @PostMapping("/events/{eventId}/multimedias")
+    public ResponseEntity<Object> createMultimediaFromEvent(@PathVariable Integer eventId,
+                                                            @Valid @RequestBody MultimediaInputDto multimediaInputDto) {
+        MultimediaDto multimediaDto = multimediaService.createMultimediaFromEvent(eventId, multimediaInputDto);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/" + multimediaDto.id).toUriString());
         return ResponseEntity.created(uri).body(multimediaDto);
     }
 
-    @PutMapping("/multimedias/{id}")
-    public ResponseEntity<Object> updatePerson(@PathVariable Integer id,
-                                               @Valid @RequestBody MultimediaInputDto multimediaInputDto) {
-        MultimediaDto dto = multimediaService.updateMultimedia(id, multimediaInputDto);
+    @PutMapping("/events/{eventId}/multimedias/{id}")
+    public ResponseEntity<Object> updateMultimediaEvent(@PathVariable Integer eventId,
+                                                        @PathVariable Integer id,
+                                                        @Valid @RequestBody MultimediaInputDto multimediaInputDto) {
+        MultimediaDto dto = multimediaService.updateMultimediaFromEvent(eventId, id, multimediaInputDto);
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/multimedias/{id}")
-    public ResponseEntity<MultimediaDto> deletePerson(@PathVariable Integer id) {
-        multimediaService.deleteMultimedia(id);
+    @DeleteMapping("/events/{eventId}/multimedias/{id}")
+    public ResponseEntity<MultimediaDto> deletePerson(@PathVariable Integer eventId, @PathVariable Integer id) {
+        multimediaService.deleteMultimediaFromEvent(eventId, id);
         return ResponseEntity.noContent().build();
     }
 }

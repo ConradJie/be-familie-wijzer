@@ -1,39 +1,42 @@
 package com.jie.befamiliewijzer.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "children")
 public class Child {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    Integer personId;
+    @OneToOne
+    @JoinColumn(name = "child_id")
+    Person person;
 
-    Integer relationId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "relation_id")
+    Relation relation;
 
     public Integer getId() {
         return id;
     }
 
-    public Integer getPersonId() {
-        return personId;
+    public Person getPerson() {
+        return person;
     }
 
-    public Integer getRelationId() {
-        return relationId;
+    public Relation getRelation() {
+        return relation;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public void setPersonId(Integer personId) {
-        this.personId = personId;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
-    public void setRelationId(Integer relationId) {
-        this.relationId = relationId;
+    public void setRelation(Relation relation) {
+        this.relation = relation;
     }
 }

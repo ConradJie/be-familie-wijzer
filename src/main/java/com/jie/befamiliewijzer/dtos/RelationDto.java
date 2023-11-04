@@ -4,6 +4,5 @@ public class RelationDto {
     public Integer id;
     public Integer personId;
     public Integer spouceId;
-    public Integer childId;
 
 }

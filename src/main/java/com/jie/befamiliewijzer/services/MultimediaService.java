@@ -3,7 +3,10 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Multimedia;
+import com.jie.befamiliewijzer.models.Relation;
+import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.MultimediaRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,32 +17,44 @@ import java.util.Optional;
 @Service
 public class MultimediaService {
     private final MultimediaRepository multimediaRepository;
+    private final EventRepository eventRepository;
 
-    public MultimediaService(MultimediaRepository multimediaRepository) {
+    public MultimediaService(MultimediaRepository multimediaRepository, EventRepository eventRepository) {
         this.multimediaRepository = multimediaRepository;
+        this.eventRepository = eventRepository;
     }
-    public MultimediaDto getMultimedia(Integer id) {
-        Optional<Multimedia> multimediaOptional = multimediaRepository.findById(id);
-        if (multimediaOptional.isPresent()) {
-            return transfer(multimediaOptional.get());
-        } else {
-            throw new ResourceNotFoundException("The requested multimedia could not be found");
+
+    public MultimediaDto getMultimediaFromEvent(Integer eventId, Integer id) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new ResourceNotFoundException("The requested event could not be found");
         }
+        Multimedia multimedia = multimediaRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested multimedia could not be found"));
+        return transfer(multimedia);
     }
 
-    public List<MultimediaDto> getAllMultimedias() {
-        return transfer(multimediaRepository.findAll());
+    public List<MultimediaDto> getAllMultimediasFromEvent(Integer eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new ResourceNotFoundException("The requested event could not be found");
+        }
+        return transfer(multimediaRepository.findAllByEventId(eventId));
     }
 
-
-    public MultimediaDto createMultimedia(MultimediaInputDto dto) {
+    public MultimediaDto createMultimediaFromEvent(Integer eventId, MultimediaInputDto dto) {
+        if (!eventRepository.existsById(eventId) || dto.eventId != eventId) {
+            throw new ResourceNotFoundException("The requested event could not be found");
+        }
         Multimedia multimedia = transfer(dto);
         multimediaRepository.save(multimedia);
         return transfer(multimedia);
     }
 
 
-    public MultimediaDto updateMultimedia(Integer id, MultimediaInputDto dto) {
+    public MultimediaDto updateMultimediaFromEvent(Integer eventId, Integer id, MultimediaInputDto dto) {
+        if (!eventRepository.existsById(eventId) || dto.eventId != eventId) {
+            throw new ResourceNotFoundException("The requested event could not be found");
+        }
         Multimedia multimedia = multimediaRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested multimedia could not be found"));
@@ -49,9 +64,12 @@ public class MultimediaService {
         return transfer(multimedia);
     }
 
-    public void deleteMultimedia(Integer id) {
-        if (multimediaRepository.existsById(id)) {
-            multimediaRepository.deleteById(id);
+    public void deleteMultimediaFromEvent(Integer eventId, Integer id) {
+        if (eventRepository.existsById(eventId)) {
+            Optional<Multimedia> multimediaOptional = multimediaRepository.findById(id);
+            if (multimediaOptional.isPresent() && multimediaOptional.get().getEvent().getId() == eventId) {
+                multimediaRepository.deleteById(id);
+            }
         }
     }
 
@@ -60,6 +78,7 @@ public class MultimediaService {
         dto.id = multimedia.getId();
         dto.description = multimedia.getDescription();
         dto.filename = multimedia.getFilename();
+        dto.eventId = multimedia.getEvent().getId();
         return dto;
     }
 
@@ -67,6 +86,7 @@ public class MultimediaService {
         Multimedia multimedia = new Multimedia();
         multimedia.setDescription(dto.description);
         multimedia.setFilename(dto.filename);
+        multimedia.setEvent(eventRepository.findById(dto.eventId).get());
         return multimedia;
     }
 

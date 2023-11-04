@@ -4,4 +4,5 @@ public class MultimediaDto {
     public Integer id;
     public String description;
     public String filename;
+    public Integer eventId;
 }
