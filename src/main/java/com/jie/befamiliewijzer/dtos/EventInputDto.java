@@ -1,6 +1,7 @@
 package com.jie.befamiliewijzer.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,8 +15,10 @@ public class EventInputDto {
     public String description;
     @Size(min = 0, max = 10240)
     public String text;
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     public Date beginDate;
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     public Date endDate;
     public Integer personId;

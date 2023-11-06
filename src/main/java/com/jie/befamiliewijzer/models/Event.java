@@ -1,12 +1,10 @@
 package com.jie.befamiliewijzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "events")
@@ -107,4 +105,31 @@ public class Event {
     public void setMultimedias(List<Multimedia> multimedias) {
         this.multimedias = multimedias;
     }
+
+    public static Set<String> getPersonOneTimeEventTypes() {
+        return new HashSet<>(Arrays.asList("BIRTH", "DEATH"));
+    }
+
+    public static Set<String> getPersonMultipleTimesEventTypes() {
+        return new HashSet<>(Arrays.asList("MIGRATION", "CELEBRATION", "OTHERS"));
+    }
+
+    public static Set<String> getPersonEventTypes() {
+        Set<String> set = new HashSet<>();
+        set.addAll(getPersonOneTimeEventTypes());
+        set.addAll(getPersonMultipleTimesEventTypes());
+        return set;
+    }
+
+    public static Set<String> getRelationEventTypes() {
+        return new HashSet<>(Arrays.asList("MARRIAGE", "DIVORCE", "OTHERS"));
+    }
+
+    public static Set<String> getEventTypes() {
+        Set<String> set = new HashSet<>();
+        set.addAll(getPersonEventTypes());
+        set.addAll(getRelationEventTypes());
+        return set;
+    }
+
 }
