@@ -3,6 +3,7 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.dtos.PersonInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
@@ -48,6 +49,9 @@ public class PersonService {
     }
 
     public PersonDto createPerson(PersonInputDto dto) {
+        if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
+            throw new UnprocessableEntityException("The sex type could not be processed");
+        }
         Person person = transfer(dto);
         personRepository.save(person);
         return transfer(person);
@@ -57,6 +61,9 @@ public class PersonService {
         Person person = personRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
+        if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
+            throw new UnprocessableEntityException("The sex type could not be processed");
+        }
         person.setGivenNames(dto.givenNames);
         person.setSurname(dto.surname);
         person.setSex(dto.sex);
@@ -66,7 +73,7 @@ public class PersonService {
 
     public void deletePerson(Integer id) {
         if (personRepository.existsById(id)) {
-            //Detach spouces from person before deleting person
+            //Detach spouses from person before deleting person
             List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(id, id);
             for (Relation relation : relations) {
                 if (relation.getPerson().getId() == id) {

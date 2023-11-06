@@ -101,8 +101,12 @@ public class RelationService {
     private RelationDto transfer(Relation relation) {
         RelationDto dto = new RelationDto();
         dto.id = relation.getId();
-        dto.personId = relation.getPerson().getId();
-        dto.spouseId = relation.getSpouse().getId();
+        if (relation.getPerson() != null) {
+            dto.personId = relation.getPerson().getId();
+        }
+        if (relation.getSpouse() != null) {
+            dto.spouseId = relation.getSpouse().getId();
+        }
         return dto;
     }
 

@@ -12,9 +12,14 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
     Optional<Event> findByPersonIdAndId(Integer personId, Integer id);
+
     Optional<Event> findByRelationIdAndId(Integer relationId, Integer id);
 
-    List<Event> findEventsByPersonId(Integer personId);
+    List<Event> findEventsByPersonIdOrderByBeginDate(Integer personId);
+
     List<Event> findEventsByRelationId(Integer relationId);
+
     Optional<Event> findEventByRelationIdAndEventType(Integer relationId, String EventType);
+
+    Optional<Event> findByPersonIdAndEventType(Integer personId, String eventType);
 }

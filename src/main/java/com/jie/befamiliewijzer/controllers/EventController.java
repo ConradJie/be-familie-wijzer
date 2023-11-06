@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
+import com.jie.befamiliewijzer.dtos.EventTypeDto;
 import com.jie.befamiliewijzer.services.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,18 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @GetMapping("/eventtypes")
+    public ResponseEntity<List<EventTypeDto>> getEventTypes() {
+        return ResponseEntity.ok(eventService.getEventTypes());
+    }
+    @GetMapping("/eventtypes/person")
+    public ResponseEntity<List<EventTypeDto>> getPerosnEventTypes() {
+        return ResponseEntity.ok(eventService.getPersonEventTypes());
+    }
+    @GetMapping("/eventtypes/relation")
+    public ResponseEntity<List<EventTypeDto>> getRelationEventTypes() {
+        return ResponseEntity.ok(eventService.getRelationEventTypes());
+    }
     @GetMapping("/persons/{personId}/events/{id}")
     public ResponseEntity<EventDto> getEventFromPerson(@PathVariable Integer personId, @PathVariable Integer id) {
         return ResponseEntity.ok(eventService.getEventFromPerson(personId, id));

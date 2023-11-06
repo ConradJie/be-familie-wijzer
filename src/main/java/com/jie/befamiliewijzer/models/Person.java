@@ -2,9 +2,9 @@ package com.jie.befamiliewijzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -81,5 +81,9 @@ public class Person {
 
     public void setEvents(Set<Event> events) {
         this.events = events;
+    }
+
+    public static Set<String> getSexTypes() {
+        return new HashSet<>(Arrays.asList("M", "F", "X"));
     }
 }
