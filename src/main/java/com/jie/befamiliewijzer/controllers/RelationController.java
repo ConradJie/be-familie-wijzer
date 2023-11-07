@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
 @CrossOrigin
 @RestController
 public class RelationController {
@@ -22,6 +23,11 @@ public class RelationController {
     @GetMapping("/relations/{id}")
     public ResponseEntity<RelationDto> getRelation(@PathVariable Integer id) {
         return ResponseEntity.ok(relationService.getRelation(id));
+    }
+
+    @GetMapping("/relations/persons/{personId}/{spouseId}")
+    public ResponseEntity<RelationDto> getRelation(@PathVariable Integer personId, @PathVariable Integer spouseId) {
+        return ResponseEntity.ok(relationService.getRelationByPersonIdAndSpouseId(personId, spouseId));
     }
 
     @GetMapping("/relations")

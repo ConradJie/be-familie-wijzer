@@ -15,6 +15,7 @@ import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,12 +37,23 @@ public class RelationService {
     }
 
     public RelationDto getRelation(Integer id) {
-        Optional<Relation> relationOptional = relationRepository.findById(id);
-        if (relationOptional.isPresent()) {
-            return transfer(relationOptional.get());
-        } else {
-            throw new ResourceNotFoundException("The requested relation could not be found");
+        Relation relation = relationRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        return transfer(relation);
+    }
+
+    public RelationDto getRelationByPersonIdAndSpouseId(Integer personId, Integer spouseId) {
+        if (!personRepository.existsById(personId)) {
+            throw new ResourceNotFoundException("The person do not exists");
         }
+        if (!personRepository.existsById(spouseId)) {
+            throw new ResourceNotFoundException("The spouse do not exists");
+        }
+        Relation relation = relationRepository
+                .findByPersonIdAndSpouseId(personId, spouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        return transfer(relation);
     }
 
     public List<RelationDto> getAllRelations() {
@@ -55,19 +67,12 @@ public class RelationService {
                 && (dto.spouseId == null || !personRepository.existsById(dto.spouseId))) {
             throw new ResourceNotFoundException("The person(s) do not exists");
         }
-        List<Relation> relations = relationRepository.findAllByPersonIdAndSpouseId(dto.personId, dto.spouseId);
-        if (!relations.isEmpty()) {
-            boolean divorced = false;
-            for (Relation relation : relations) {
-                Optional<Event> eventOptional = eventRepository.findEventByRelationIdAndEventType(relation.getId(), "DIVORCE");
-                if (eventOptional.isPresent()) {
-                    divorced = true;
-                    break;
-                }
-            }
-            if (!divorced) {
-                throw new ResourceAlreadyExistsException("The relation already Exists");
-            }
+        if (dto.personId == dto.spouseId) {
+            throw new ResourceNotFoundException("The person and spouse are the same person");
+        }
+        if (relationRepository.existsByPersonIdAndSpouseId(dto.personId, dto.spouseId)
+                || relationRepository.existsByPersonIdAndSpouseId(dto.spouseId, dto.personId)) {
+            throw new ResourceAlreadyExistsException("The relation already Exists");
         }
         Relation relation = transfer(dto);
         relationRepository.save(relation);
