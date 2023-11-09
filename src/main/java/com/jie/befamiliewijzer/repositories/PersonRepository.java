@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
-
+    boolean existsByGivenNamesAndSurnameAndSex(String givenNames,String surname,String sex);
 }

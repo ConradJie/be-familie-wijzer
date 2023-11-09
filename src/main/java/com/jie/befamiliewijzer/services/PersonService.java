@@ -5,7 +5,6 @@ import com.jie.befamiliewijzer.dtos.PersonInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
-import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.ChildRepository;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -52,6 +52,10 @@ public class PersonService {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");
         }
+        if (personRepository.existsByGivenNamesAndSurnameAndSex(dto.givenNames, dto.surname, dto.sex)) {
+            throw new UnprocessableEntityException
+                    ("there already exists such a person with the same given names and surname and gender");
+        }
         Person person = transfer(dto);
         personRepository.save(person);
         return transfer(person);
@@ -76,9 +80,9 @@ public class PersonService {
             //Detach spouses from person before deleting person
             List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(id, id);
             for (Relation relation : relations) {
-                if (relation.getPerson().getId() == id) {
+                if (Objects.equals(relation.getPerson().getId(), id)) {
                     relation.setPerson(null);
-                } else if (relation.getSpouse().getId() == id) {
+                } else if (Objects.equals(relation.getSpouse().getId(), id)) {
                     relation.setSpouse(null);
                 }
                 relationRepository.save(relation);
@@ -88,8 +92,9 @@ public class PersonService {
             }
             Optional<Child> childOptional = childRepository.findByPersonId(id);
             if (childOptional.isPresent()) {
-                childService.deleteChildFromRelation(childOptional.get().getRelation().getId(),
-                        childOptional.get().getId());
+                childService.deleteChildFromRelation
+                        (childOptional.get().getRelation().getId(),
+                                childOptional.get().getId());
             }
             personRepository.deleteById(id);
         }
