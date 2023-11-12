@@ -5,17 +5,14 @@ import com.jie.befamiliewijzer.dtos.RelationInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Child;
-import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.ChildRepository;
-import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.PersonRepository;
 import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,16 +20,13 @@ import java.util.Optional;
 public class RelationService {
     private final RelationRepository relationRepository;
     private final PersonRepository personRepository;
-    private final EventRepository eventRepository;
     private final ChildRepository childRepository;
 
     public RelationService(RelationRepository relationRepository,
                            PersonRepository personRepository,
-                           EventRepository eventRepository,
                            ChildRepository childRepository) {
         this.relationRepository = relationRepository;
         this.personRepository = personRepository;
-        this.eventRepository = eventRepository;
         this.childRepository = childRepository;
     }
 
@@ -54,6 +48,11 @@ public class RelationService {
                 .findByPersonIdAndSpouseId(personId, spouseId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
         return transfer(relation);
+    }
+
+    public List<RelationDto> getAllRelationFromPersonId(Integer personId) {
+        List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(personId, personId);
+        return transfer(relations);
     }
 
     public List<RelationDto> getAllRelations() {

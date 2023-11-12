@@ -11,6 +11,5 @@ public class MultimediaInputDto {
     @NotBlank
     @Size(min = 1, max = 128)
     public String filename;
-    @Positive
     public Integer eventId;
 }

@@ -48,6 +48,10 @@ public class PersonService {
         return transfer(personRepository.findAll());
     }
 
+    public List<PersonDto> getAllPersonsByName(String name) {
+        return transfer(personRepository
+                .findAllByGivenNamesIsContainingIgnoreCaseOrSurnameContainingIgnoreCase(name,name));
+    }
     public PersonDto createPerson(PersonInputDto dto) {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");

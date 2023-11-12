@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
 @CrossOrigin
 @RestController
 public class MultimediaController {
@@ -17,6 +18,11 @@ public class MultimediaController {
 
     public MultimediaController(MultimediaService multimediaService) {
         this.multimediaService = multimediaService;
+    }
+
+    @GetMapping("/multimedias/{id}")
+    public ResponseEntity<MultimediaDto> getMultimedia(@PathVariable Integer id) {
+        return ResponseEntity.ok(multimediaService.getMultimedia(id));
     }
 
     @GetMapping("/events/{eventId}/multimedias/{id}")
@@ -29,6 +35,15 @@ public class MultimediaController {
 //        return ResponseEntity.ok(multimediaService.getAllMultimediasFromEvent(eventId));
         List<MultimediaDto> list = multimediaService.getAllMultimediasFromEvent(eventId);
         return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/multimedias")
+    public ResponseEntity<Object> createMultimedia(@Valid @RequestBody MultimediaInputDto multimediaInputDto) {
+        MultimediaDto multimediaDto = multimediaService.createMultimedia(multimediaInputDto);
+        URI uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/" + multimediaDto.id).toUriString());
+        return ResponseEntity.created(uri).body(multimediaDto);
     }
 
     @PostMapping("/events/{eventId}/multimedias")

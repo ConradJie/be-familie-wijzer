@@ -25,6 +25,10 @@ public class RelationController {
         return ResponseEntity.ok(relationService.getRelation(id));
     }
 
+    @GetMapping("/relations/persons/{personId}")
+    public ResponseEntity<List<RelationDto>> getRelationFromPerson(@PathVariable Integer personId) {
+        return ResponseEntity.ok(relationService.getAllRelationFromPersonId(personId));
+    }
     @GetMapping("/relations/persons/{personId}/{spouseId}")
     public ResponseEntity<RelationDto> getRelation(@PathVariable Integer personId, @PathVariable Integer spouseId) {
         return ResponseEntity.ok(relationService.getRelationByPersonIdAndSpouseId(personId, spouseId));
