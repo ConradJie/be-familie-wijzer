@@ -29,6 +29,11 @@ public class PersonController {
         return ResponseEntity.ok(personService.getAllPersons());
     }
 
+    @GetMapping("/persons/namecontains/{name}")
+    public ResponseEntity<List<PersonDto>> getAllPersonsByName(@PathVariable String name) {
+        return ResponseEntity.ok(personService.getAllPersonsByName(name));
+    }
+
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
         PersonDto personDto = personService.createPerson(personInputDto);
