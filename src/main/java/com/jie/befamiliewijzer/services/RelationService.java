@@ -102,6 +102,17 @@ public class RelationService {
         }
     }
 
+    public void deleteRelationByPersonIdAndSpouseId(Integer personId, Integer spouseId) {
+        Optional<Relation> relationOptional = relationRepository.findByPersonIdAndSpouseId(personId, spouseId);
+        if (!relationOptional.isPresent()) {
+            relationOptional = relationRepository.findByPersonIdAndSpouseId(spouseId, personId);
+            if (!relationOptional.isPresent()) {
+                throw new ResourceNotFoundException("The requested relation could not be found");
+            }
+        }
+        deleteRelation(relationOptional.get().getId());
+    }
+
     private RelationDto transfer(Relation relation) {
         RelationDto dto = new RelationDto();
         dto.id = relation.getId();

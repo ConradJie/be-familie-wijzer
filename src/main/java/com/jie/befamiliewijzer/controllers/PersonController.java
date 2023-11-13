@@ -33,6 +33,10 @@ public class PersonController {
     public ResponseEntity<List<PersonDto>> getAllPersonsByName(@PathVariable String name) {
         return ResponseEntity.ok(personService.getAllPersonsByName(name));
     }
+    @GetMapping("/persons/spouses/{id}")
+    public ResponseEntity<List<PersonDto>> getAllSpousesFromPersonId(@PathVariable Integer id) {
+        return ResponseEntity.ok(personService.getAllSpousesFromPersonId(id));
+    }
 
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
