@@ -50,8 +50,27 @@ public class PersonService {
 
     public List<PersonDto> getAllPersonsByName(String name) {
         return transfer(personRepository
-                .findAllByGivenNamesIsContainingIgnoreCaseOrSurnameContainingIgnoreCase(name,name));
+                .findAllByGivenNamesIsContainingIgnoreCaseOrSurnameContainingIgnoreCase(name, name));
     }
+
+    public List<PersonDto> getAllSpousesFromPersonId(Integer personId) {
+        List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(personId, personId);
+        List<Person> list = new ArrayList<>();
+        for (Relation relation : relations) {
+            if (relation.getPerson() != null) {
+                if (!relation.getPerson().getId().equals(personId)) {
+                    list.add(relation.getPerson());
+                }
+            }
+            if (relation.getSpouse() != null) {
+                if (!relation.getSpouse().getId().equals(personId)) {
+                    list.add(relation.getSpouse());
+                }
+            }
+        }
+        return transfer(list);
+    }
+
     public PersonDto createPerson(PersonInputDto dto) {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");

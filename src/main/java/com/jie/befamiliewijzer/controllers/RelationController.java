@@ -29,6 +29,7 @@ public class RelationController {
     public ResponseEntity<List<RelationDto>> getRelationFromPerson(@PathVariable Integer personId) {
         return ResponseEntity.ok(relationService.getAllRelationFromPersonId(personId));
     }
+
     @GetMapping("/relations/persons/{personId}/{spouseId}")
     public ResponseEntity<RelationDto> getRelation(@PathVariable Integer personId, @PathVariable Integer spouseId) {
         return ResponseEntity.ok(relationService.getRelationByPersonIdAndSpouseId(personId, spouseId));
@@ -58,6 +59,12 @@ public class RelationController {
     @DeleteMapping("/relations/{id}")
     public ResponseEntity<RelationDto> deleteRelation(@PathVariable Integer id) {
         relationService.deleteRelation(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/relations/persons/{personId}/{spouseId}")
+    public ResponseEntity<RelationDto> deleteRelationByPersonIdAndSpouseId(@PathVariable Integer personId, @PathVariable Integer spouseId) {
+        relationService.deleteRelationByPersonIdAndSpouseId(personId, spouseId);
         return ResponseEntity.noContent().build();
     }
 }
