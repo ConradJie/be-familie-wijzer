@@ -2,8 +2,10 @@ package com.jie.befamiliewijzer.services;
 
 import com.jie.befamiliewijzer.dtos.RelationDto;
 import com.jie.befamiliewijzer.dtos.RelationInputDto;
+import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
 import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -50,9 +53,52 @@ public class RelationService {
         return transfer(relation);
     }
 
-    public List<RelationDto> getAllRelationFromPersonId(Integer personId) {
+    public List<RelationSpouseDto> getAllRelationsFromPersonId(Integer personId) {
         List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(personId, personId);
-        return transfer(relations);
+        List<RelationSpouseDto> list = new ArrayList<>();
+        for (Relation relation : relations) {
+            boolean single = false;
+            if (relation.getPerson() != null) {
+                if (!relation.getPerson().getId().equals(personId)) {
+                    RelationSpouseDto relationSpouseDto = new RelationSpouseDto();
+                    relationSpouseDto.id = relation.getId();
+                    relationSpouseDto.personId = personId;
+                    relationSpouseDto.spouseId = relation.getPerson().getId();
+                    relationSpouseDto.spouseGivenNames = relation.getPerson().getGivenNames();
+                    relationSpouseDto.spouseSurname = relation.getPerson().getSurname();
+                    relationSpouseDto.spouseSex = relation.getPerson().getSex();
+                    list.add(relationSpouseDto);
+                }
+            } else {
+                single = true;
+            }
+            if (relation.getSpouse() != null) {
+                if (!relation.getSpouse().getId().equals(personId)) {
+                    RelationSpouseDto relationSpouseDto = new RelationSpouseDto();
+                    relationSpouseDto.id = relation.getId();
+                    relationSpouseDto.personId = personId;
+                    relationSpouseDto.spouseId = relation.getSpouse().getId();
+                    relationSpouseDto.spouseGivenNames = relation.getSpouse().getGivenNames();
+                    relationSpouseDto.spouseSurname = relation.getSpouse().getSurname();
+                    relationSpouseDto.spouseSex = relation.getSpouse().getSex();
+                    list.add(relationSpouseDto);
+                }
+            } else {
+                single = true;
+            }
+            if (single) {
+                //If single then create a anonymous spouse
+                RelationSpouseDto relationSpouseDto = new RelationSpouseDto();
+                relationSpouseDto.id = relation.getId();
+                relationSpouseDto.personId = personId;
+                relationSpouseDto.spouseId = null;
+                relationSpouseDto.spouseGivenNames = "-";
+                relationSpouseDto.spouseSurname = "-";
+                relationSpouseDto.spouseSex = "X";
+                list.add(relationSpouseDto);
+            }
+        }
+        return list;
     }
 
     public List<RelationDto> getAllRelations() {
@@ -66,7 +112,7 @@ public class RelationService {
                 && (dto.spouseId == null || !personRepository.existsById(dto.spouseId))) {
             throw new ResourceNotFoundException("The person(s) do not exists");
         }
-        if (dto.personId == dto.spouseId) {
+        if (Objects.equals(dto.personId, dto.spouseId)) {
             throw new ResourceNotFoundException("The person and spouse are the same person");
         }
         if (relationRepository.existsByPersonIdAndSpouseId(dto.personId, dto.spouseId)
@@ -79,10 +125,25 @@ public class RelationService {
     }
 
     public RelationDto updateRelation(Integer id, RelationInputDto dto) {
-        if (!relationRepository.existsById(id)) {
-            throw new ResourceNotFoundException("The requested relation could not be found");
+        Relation relation = relationRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        if (dto.personId == null) {
+            relation.setPerson(null);
+        } else {
+            Person person = personRepository
+                    .findById(dto.personId)
+                    .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
+            relation.setPerson(person);
         }
-        Relation relation = transfer(dto);
+        if (dto.spouseId == null) {
+            relation.setPerson(null);
+        } else {
+            Person spouse = personRepository
+                    .findById(dto.spouseId)
+                    .orElseThrow(() -> new ResourceNotFoundException("The requested spouse could not be found"));
+            relation.setSpouse(spouse);
+        }
         relationRepository.save(relation);
         return transfer(relation);
     }
@@ -102,11 +163,26 @@ public class RelationService {
         }
     }
 
+    public void removePersonFromRelation(Integer relationId, Integer personId) {
+        Relation relation = relationRepository
+                .findById(relationId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        if (Objects.equals(relation.getPerson().getId(), personId)) {
+            relation.setPerson(null);
+        } else if (Objects.equals(relation.getSpouse().getId(), personId)) {
+            relation.setSpouse(null);
+        }
+        relationRepository.save(relation);
+        if (relation.getPerson().getId() == null && relation.getSpouse().getId() == null) {
+            deleteRelation(relationId);
+        }
+    }
+
     public void deleteRelationByPersonIdAndSpouseId(Integer personId, Integer spouseId) {
         Optional<Relation> relationOptional = relationRepository.findByPersonIdAndSpouseId(personId, spouseId);
-        if (!relationOptional.isPresent()) {
+        if (relationOptional.isEmpty()) {
             relationOptional = relationRepository.findByPersonIdAndSpouseId(spouseId, personId);
-            if (!relationOptional.isPresent()) {
+            if (relationOptional.isEmpty()) {
                 throw new ResourceNotFoundException("The requested relation could not be found");
             }
         }

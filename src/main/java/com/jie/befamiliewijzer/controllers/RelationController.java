@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.RelationDto;
 import com.jie.befamiliewijzer.dtos.RelationInputDto;
+import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
 import com.jie.befamiliewijzer.services.RelationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class RelationController {
     }
 
     @GetMapping("/relations/persons/{personId}")
-    public ResponseEntity<List<RelationDto>> getRelationFromPerson(@PathVariable Integer personId) {
-        return ResponseEntity.ok(relationService.getAllRelationFromPersonId(personId));
+    public ResponseEntity<List<RelationSpouseDto>> getRelationsFromPerson(@PathVariable Integer personId) {
+        return ResponseEntity.ok(relationService.getAllRelationsFromPersonId(personId));
     }
 
     @GetMapping("/relations/persons/{personId}/{spouseId}")
@@ -59,6 +60,12 @@ public class RelationController {
     @DeleteMapping("/relations/{id}")
     public ResponseEntity<RelationDto> deleteRelation(@PathVariable Integer id) {
         relationService.deleteRelation(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/relations/{relationId}/{personId}")
+    public ResponseEntity<RelationDto> removePersonFromRelation(@PathVariable Integer relationId, @PathVariable Integer personId) {
+        relationService.removePersonFromRelation(relationId, personId);
         return ResponseEntity.noContent().build();
     }
 

@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.services;
 
 import com.jie.befamiliewijzer.dtos.ChildDto;
 import com.jie.befamiliewijzer.dtos.ChildInputDto;
+import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Event;
@@ -38,10 +39,24 @@ public class ChildService {
         return transfer(child);
     }
 
-    public List<ChildDto> getAlChildrenFromRelation(Integer relationId) {
-//        return transfer(childRepository.findAllByRelationId(relationId));
+    public List<ChildPersonDto> getAlChildrenFromRelation(Integer relationId) {
         List<Child> list = childRepository.findAllByRelationId(relationId);
-        return transfer(childRepository.findAllByRelationId(relationId));
+        List<ChildPersonDto> childPersonDtos = new ArrayList<>();
+        for (Child child : list) {
+            Optional<Person> personOptional = personRepository.findById(child.getPerson().getId());
+            if (personOptional.isPresent()) {
+                Person person = personOptional.get();
+                ChildPersonDto dto = new ChildPersonDto();
+                dto.id = child.getId();
+                dto.personId = child.getPerson().getId();
+                dto.relationId = child.getRelation().getId();
+                dto.givenNames = person.getGivenNames();
+                dto.surname = person.getSurname();
+                dto.sex = person.getSex();
+                childPersonDtos.add(dto);
+            }
+        }
+        return childPersonDtos;
     }
 
 
@@ -49,7 +64,7 @@ public class ChildService {
         if (relationId != dto.relationId || !relationRepository.existsById(relationId)) {
             throw new ResourceNotFoundException("The requested relation could not be found");
         }
-        if (childRepository.existsByRelation_IdAndPersonId(relationId,dto.personId)) {
+        if (childRepository.existsByRelation_IdAndPersonId(relationId, dto.personId)) {
             throw new ResourceNotFoundException("This child already exists");
         }
         Child child = transfer(dto);

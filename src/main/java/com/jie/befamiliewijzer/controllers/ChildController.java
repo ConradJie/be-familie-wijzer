@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.ChildDto;
 import com.jie.befamiliewijzer.dtos.ChildInputDto;
+import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.services.ChildService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ChildController {
     }
 
     @GetMapping("/relations/{relationId}/children")
-    public ResponseEntity<List<ChildDto>> getAlChildrenFromRelation(@PathVariable Integer relationId) {
+    public ResponseEntity<List<ChildPersonDto>> getAlChildrenFromRelation(@PathVariable Integer relationId) {
         return ResponseEntity.ok(childService.getAlChildrenFromRelation(relationId));
     }
 
