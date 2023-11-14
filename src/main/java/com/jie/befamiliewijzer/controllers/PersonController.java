@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+
 @CrossOrigin
 @RestController
 public class PersonController {
@@ -33,10 +34,6 @@ public class PersonController {
     public ResponseEntity<List<PersonDto>> getAllPersonsByName(@PathVariable String name) {
         return ResponseEntity.ok(personService.getAllPersonsByName(name));
     }
-    @GetMapping("/persons/spouses/{id}")
-    public ResponseEntity<List<PersonDto>> getAllSpousesFromPersonId(@PathVariable Integer id) {
-        return ResponseEntity.ok(personService.getAllSpousesFromPersonId(id));
-    }
 
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
@@ -49,7 +46,7 @@ public class PersonController {
 
     @PutMapping("/persons/{id}")
     public ResponseEntity<Object> updatePerson(@PathVariable Integer id,
-                                         @Valid @RequestBody PersonInputDto personInputDto) {
+                                               @Valid @RequestBody PersonInputDto personInputDto) {
         PersonDto dto = personService.updatePerson(id, personInputDto);
         return ResponseEntity.ok(dto);
     }
