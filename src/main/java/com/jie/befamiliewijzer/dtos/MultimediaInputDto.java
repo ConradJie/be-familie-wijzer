@@ -8,8 +8,7 @@ public class MultimediaInputDto {
     @NotBlank
     @Size(min = 1, max = 128)
     public String description;
-    @NotBlank
-    @Size(min = 1, max = 128)
+    @Size(min = 0, max = 128)
     public String filename;
     public Integer eventId;
 }

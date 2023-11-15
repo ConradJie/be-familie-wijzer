@@ -2,22 +2,28 @@ package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
+import com.jie.befamiliewijzer.models.Media;
+import com.jie.befamiliewijzer.services.MediaService;
 import com.jie.befamiliewijzer.services.MultimediaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin
 @RestController
 public class MultimediaController {
     private final MultimediaService multimediaService;
+    private final MediaService mediaService;
 
-    public MultimediaController(MultimediaService multimediaService) {
+    public MultimediaController(MultimediaService multimediaService, MediaService mediaService) {
         this.multimediaService = multimediaService;
+        this.mediaService = mediaService;
     }
 
     @GetMapping("/multimedias/{id}")
@@ -54,6 +60,20 @@ public class MultimediaController {
                 .fromCurrentRequest()
                 .path("/" + multimediaDto.id).toUriString());
         return ResponseEntity.created(uri).body(multimediaDto);
+    }
+
+    @PostMapping("/multimedias/{id}/media")
+    public ResponseEntity<MultimediaDto> assignMediaToMultimedia(@PathVariable("id") Integer multimediaId,
+                                                                 @RequestBody MultipartFile file) {
+        String url = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/download/")
+                .path(Objects.requireNonNull(file.getOriginalFilename()))
+                .toUriString();
+        String filename = mediaService.storeFile(file, url);
+        return ResponseEntity
+                .created(URI.create(url))
+                .body(multimediaService.assignMediaToMultiMedia(filename, multimediaId));
     }
 
     @PutMapping("/events/{eventId}/multimedias/{id}")
