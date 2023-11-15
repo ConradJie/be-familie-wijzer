@@ -15,6 +15,8 @@ public class Multimedia {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id")
     Event event;
+    @OneToOne
+    Media media;
 
     public Integer getId() {
         return id;
@@ -32,6 +34,10 @@ public class Multimedia {
         return event;
     }
 
+    public Media getMedia() {
+        return media;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -46,5 +52,9 @@ public class Multimedia {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public void setMedia(Media media) {
+        this.media = media;
     }
 }
