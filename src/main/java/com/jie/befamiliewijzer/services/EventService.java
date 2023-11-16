@@ -204,6 +204,12 @@ public class EventService {
 
     public void deleteEventFromRelation(Integer relationId, Integer id) {
         if (relationRepository.existsById(relationId) && eventRepository.existsById(id)) {
+            //Detach relation from event before deleting event
+            Event event = eventRepository
+                    .findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
+            event.setRelation(null);
+            eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
