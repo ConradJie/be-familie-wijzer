@@ -70,7 +70,7 @@ public class MultimediaController {
                 .path("/download/")
                 .path(Objects.requireNonNull(file.getOriginalFilename()))
                 .toUriString();
-        String filename = mediaService.storeFile(file, url);
+        String filename = mediaService.storeFile(file, url,String.format("%d-",multimediaId));
         return ResponseEntity
                 .created(URI.create(url))
                 .body(multimediaService.assignMediaToMultiMedia(filename, multimediaId));

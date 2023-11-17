@@ -34,8 +34,8 @@ public class MediaService {
         }
     }
 
-    public String storeFile(MultipartFile file, String url) {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+    public String storeFile(MultipartFile file, String url,String prefix) {
+        String fileName = prefix + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         Path filePath = Paths.get(fileStoragePath + "\\" + fileName);
 
         try {
