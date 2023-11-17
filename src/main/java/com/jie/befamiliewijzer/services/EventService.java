@@ -129,24 +129,26 @@ public class EventService {
             boolean selfBeginOfPeriod = personEvents.get(0).getId().equals(eventId);
             Date beginOfPeriod = personEvents.get(0).getBeginDate();
             Date beginOfPeriodNext = personEvents.get(Math.min(1, personEvents.size() - 1)).getBeginDate();
+            Integer beginOfPeriodNextId = personEvents.get(Math.min(1, personEvents.size() - 1)).getId();
 
             boolean death = personEvents.get(personEvents.size() - 1).getEventType().equals("DEATH");
             boolean selfEndOfPeriod = personEvents.get(personEvents.size() - 1).getId().equals(eventId);
             Date endOfPeriod = personEvents.get(personEvents.size() - 1).getEndDate();
             Date endOfPeriodPrev = personEvents.get(Math.max(0, personEvents.size() - 2)).getEndDate();
+            Integer endOfPeriodPrevId =personEvents.get(Math.max(0, personEvents.size() - 2)).getId();
 
             if (birth && !selfBeginOfPeriod && beginOfPeriod.compareTo(dto.endDate) > 0) {
                 throw new UnprocessableEntityException("The event occurred before the date of birth");
             } else if (dto.eventType.equals("DEATH")
                     && (dto.endDate.compareTo(beginOfPeriod) < 0
-                    || dto.endDate.compareTo(beginOfPeriodNext) < 0)) {
+                    || (dto.endDate.compareTo(beginOfPeriodNext) < 0 && !Objects.equals(eventId, beginOfPeriodNextId)))) {
                 throw new UnprocessableEntityException("The date of death occurrs before previous events");
             }
             if (death && !selfEndOfPeriod && endOfPeriod.compareTo(dto.beginDate) < 0) {
                 throw new UnprocessableEntityException("The event occurrs after the date of death");
             } else if (dto.eventType.equals("BIRTH")
                     && dto.beginDate.compareTo(endOfPeriod) > 0
-                    && dto.beginDate.compareTo(endOfPeriodPrev) > 0) {
+                    && (dto.beginDate.compareTo(endOfPeriodPrev) > 0  && !Objects.equals(eventId, endOfPeriodPrevId))) {
                 throw new UnprocessableEntityException("The birth of death occurrs after previous events");
             }
         }
