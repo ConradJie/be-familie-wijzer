@@ -10,4 +10,7 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person, Integer> {
     boolean existsByGivenNamesAndSurnameAndSex(String givenNames,String surname,String sex);
     List<Person> findAllByGivenNamesIsContainingIgnoreCaseOrSurnameContainingIgnoreCase(String givenNames, String surname);
+    List<Person> findAllByGivenNamesIsContainingIgnoreCaseAndSurnameIsContainingIgnoreCaseOrderByGivenNames(String givenNames,String surname);
+    List<Person> findAllByGivenNamesIsContainingIgnoreCaseOrderByGivenNames(String givenNames);
+    List<Person> findAllBySurnameContainingIgnoreCaseOrderBySurname(String surname);
 }

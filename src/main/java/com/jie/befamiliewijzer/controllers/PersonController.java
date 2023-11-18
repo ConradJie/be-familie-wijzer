@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -33,6 +34,20 @@ public class PersonController {
     @GetMapping("/persons/namecontains/{name}")
     public ResponseEntity<List<PersonDto>> getAllPersonsByName(@PathVariable String name) {
         return ResponseEntity.ok(personService.getAllPersonsByName(name));
+    }
+
+    @GetMapping("/persons/contains")
+    public ResponseEntity<List<PersonDto>> getAllPersonsContainsGivenNamesSurname(
+            @RequestParam(value = "givenNames", required = false) Optional<String> givenNames,
+            @RequestParam(value = "surname", required = false) Optional<String> surname) {
+        if (givenNames.isPresent() && surname.isPresent()) {
+            return ResponseEntity.ok(personService.getAllPersonsContainsGivenNamesAndSurname(givenNames.get(), surname.get()));
+        } else if (givenNames.isPresent()) {
+            return ResponseEntity.ok(personService.getAllPersonsContainsGivenNames(givenNames.get()));
+        } else if (surname.isPresent()) {
+            return ResponseEntity.ok(personService.getAllPersonsContainsSurname(surname.get()));
+        }
+        return ResponseEntity.ok(personService.getAllPersons());
     }
 
     @PostMapping("/persons")

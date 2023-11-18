@@ -53,6 +53,19 @@ public class PersonService {
                 .findAllByGivenNamesIsContainingIgnoreCaseOrSurnameContainingIgnoreCase(name, name));
     }
 
+    public List<PersonDto> getAllPersonsContainsGivenNamesAndSurname(String givenNames, String surname) {
+        return transfer(personRepository
+                .findAllByGivenNamesIsContainingIgnoreCaseAndSurnameIsContainingIgnoreCaseOrderByGivenNames(givenNames, surname));
+    }
+
+    public List<PersonDto> getAllPersonsContainsGivenNames(String givenNames) {
+        return transfer(personRepository.findAllByGivenNamesIsContainingIgnoreCaseOrderByGivenNames(givenNames));
+    }
+
+    public List<PersonDto> getAllPersonsContainsSurname(String surname) {
+        return transfer(personRepository.findAllBySurnameContainingIgnoreCaseOrderBySurname(surname));
+    }
+
     public PersonDto createPerson(PersonInputDto dto) {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");
