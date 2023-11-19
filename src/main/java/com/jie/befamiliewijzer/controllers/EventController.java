@@ -45,6 +45,10 @@ public class EventController {
     public ResponseEntity<List<EventDto>> getAllEventsFromPerson(@PathVariable Integer id) {
         return ResponseEntity.ok(eventService.getAllEventsFromPerson(id));
     }
+    @GetMapping("/persons/{id}/relationEvents")
+    public ResponseEntity<List<EventDto>> getAllRelationEventsFromPerson(@PathVariable Integer id) {
+        return ResponseEntity.ok(eventService.getAllRelationEventsFromPerson(id));
+    }
     @GetMapping("/relations/{id}/events")
     public ResponseEntity<List<EventDto>> getAllEventsFromRelation(@PathVariable Integer id) {
         return ResponseEntity.ok(eventService.getAllEventsFromRelation(id));
