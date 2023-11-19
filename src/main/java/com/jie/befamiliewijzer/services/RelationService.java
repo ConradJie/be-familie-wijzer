@@ -102,9 +102,7 @@ public class RelationService {
     }
 
     public List<RelationDto> getAllRelations() {
-//        return transfer(relationRepository.findAll());
-        List<Relation> list = relationRepository.findAll();
-        return transfer(list);
+        return transfer(relationRepository.findAll());
     }
 
     public RelationDto createRelation(RelationInputDto dto) {

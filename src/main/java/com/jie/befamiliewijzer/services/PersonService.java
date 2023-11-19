@@ -1,7 +1,9 @@
 package com.jie.befamiliewijzer.services;
 
+import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.dtos.PersonInputDto;
+import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
@@ -64,6 +66,38 @@ public class PersonService {
 
     public List<PersonDto> getAllPersonsContainsSurname(String surname) {
         return transfer(personRepository.findAllBySurnameContainingIgnoreCaseOrderBySurname(surname));
+    }
+
+    public List<PersonDto> getAllChildrenFromPerson(Integer id) {
+        List<PersonDto> list = new ArrayList<>();
+        List<RelationSpouseDto> relationSpouseDtos = relationService.getAllRelationsFromPersonId(id);
+        for (RelationSpouseDto relationSpouseDto : relationSpouseDtos) {
+            List<ChildPersonDto> childPersonDtos = childService.getAlChildrenFromRelation(relationSpouseDto.id);
+            for (ChildPersonDto childPersonDto : childPersonDtos) {
+                PersonDto dto = new PersonDto();
+                dto.id = childPersonDto.personId;
+                dto.givenNames = childPersonDto.givenNames;
+                dto.surname = childPersonDto.surname;
+                dto.sex = childPersonDto.sex;
+                list.add(dto);
+            }
+        }
+        return list;
+    }
+
+    public List<PersonDto> getParentsPerson(Integer id) {
+        List<PersonDto> list = new ArrayList<>();
+        Optional<Child> childOptional = childRepository.findByPersonId(id);
+        if (childOptional.isPresent()) {
+            Relation relation = childOptional.get().getRelation();
+            if (relation.getPerson() != null) {
+                list.add(transfer(relation.getPerson()));
+            }
+            if (relation.getSpouse() != null) {
+                list.add(transfer(relation.getSpouse()));
+            }
+        }
+        return list;
     }
 
     public PersonDto createPerson(PersonInputDto dto) {

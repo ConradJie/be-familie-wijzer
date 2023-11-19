@@ -66,6 +66,21 @@ public class EventService {
         }
     }
 
+    public List<EventDto> getAllRelationEventsFromPerson(Integer personId) {
+        if (!personRepository.existsById(personId)) {
+            throw new ResourceNotFoundException("The requested person could not be found");
+        }
+        List<EventDto> list = new ArrayList<>();
+        List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(personId, personId);
+        for (Relation relation : relations) {
+            List<Event> events = eventRepository.findEventsByRelationId(relation.getId());
+            for (Event event : events) {
+                list.add(transfer(event));
+            }
+        }
+        return list;
+    }
+
     public List<EventDto> getAllEventsFromRelation(Integer relationId) {
         if (relationRepository.existsById(relationId)) {
             return transfer(eventRepository.findEventsByRelationId(relationId));
@@ -135,7 +150,7 @@ public class EventService {
             boolean selfEndOfPeriod = personEvents.get(personEvents.size() - 1).getId().equals(eventId);
             Date endOfPeriod = personEvents.get(personEvents.size() - 1).getEndDate();
             Date endOfPeriodPrev = personEvents.get(Math.max(0, personEvents.size() - 2)).getEndDate();
-            Integer endOfPeriodPrevId =personEvents.get(Math.max(0, personEvents.size() - 2)).getId();
+            Integer endOfPeriodPrevId = personEvents.get(Math.max(0, personEvents.size() - 2)).getId();
 
             if (birth && !selfBeginOfPeriod && beginOfPeriod.compareTo(dto.endDate) > 0) {
                 throw new UnprocessableEntityException("The event occurred before the date of birth");
@@ -148,7 +163,7 @@ public class EventService {
                 throw new UnprocessableEntityException("The event occurrs after the date of death");
             } else if (dto.eventType.equals("BIRTH")
                     && dto.beginDate.compareTo(endOfPeriod) > 0
-                    && (dto.beginDate.compareTo(endOfPeriodPrev) > 0  && !Objects.equals(eventId, endOfPeriodPrevId))) {
+                    && (dto.beginDate.compareTo(endOfPeriodPrev) > 0 && !Objects.equals(eventId, endOfPeriodPrevId))) {
                 throw new UnprocessableEntityException("The birth of death occurrs after previous events");
             }
         }

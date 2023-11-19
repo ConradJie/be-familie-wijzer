@@ -50,6 +50,16 @@ public class PersonController {
         return ResponseEntity.ok(personService.getAllPersons());
     }
 
+    @GetMapping("/persons/children/{id}")
+    public ResponseEntity<List<PersonDto>> getAllChildrenFromPerson(@PathVariable Integer id) {
+        return ResponseEntity.ok(personService.getAllChildrenFromPerson(id));
+    }
+
+    @GetMapping("/persons/parents/{id}")
+    public ResponseEntity<List<PersonDto>> getParentrsFromPerson(@PathVariable Integer id) {
+        return ResponseEntity.ok(personService.getParentsPerson(id));
+    }
+
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
         PersonDto personDto = personService.createPerson(personInputDto);
