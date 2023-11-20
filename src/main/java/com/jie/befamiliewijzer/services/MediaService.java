@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+
 @Service
 public class MediaService {
     private final Path fileStoragePath;
@@ -34,9 +36,10 @@ public class MediaService {
         }
     }
 
-    public String storeFile(MultipartFile file, String url,String prefix) {
-        String fileName = prefix + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        Path filePath = Paths.get(fileStoragePath + "\\" + fileName);
+    public String storeFile(MultipartFile file, String url, String prefix) {
+        String fileName = String.format("%s%s", prefix, StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename())));
+
+        Path filePath = Paths.get(String.format("%s\\%s", fileStoragePath, fileName));
 
         try {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
