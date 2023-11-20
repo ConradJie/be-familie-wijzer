@@ -9,6 +9,7 @@ import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.MediaRepository;
 import com.jie.befamiliewijzer.repositories.MultimediaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,7 @@ public class MultimediaService {
 
     }
 
+    @Transactional
     public void deleteMultimediaFromEvent(Integer eventId, Integer id) {
         if (eventRepository.existsById(eventId)) {
             Optional<Multimedia> multimediaOptional = multimediaRepository.findById(id);
@@ -108,6 +110,7 @@ public class MultimediaService {
                 Multimedia multimedia = multimediaOptional.get();
                 multimedia.setEvent(null);
                 multimediaRepository.save(multimedia);
+                mediaRepository.deleteByFilename(multimedia.getFilename());
                 multimediaRepository.deleteById(id);
             }
         }
@@ -119,6 +122,9 @@ public class MultimediaService {
         dto.description = multimedia.getDescription();
         dto.filename = multimedia.getFilename();
         dto.eventId = multimedia.getEvent().getId();
+        if (multimedia.getMedia() != null) {
+            dto.media = multimedia.getMedia();
+        }
         return dto;
     }
 

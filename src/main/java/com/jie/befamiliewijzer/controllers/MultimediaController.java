@@ -38,9 +38,7 @@ public class MultimediaController {
 
     @GetMapping("/events/{eventId}/multimedias")
     public ResponseEntity<List<MultimediaDto>> getAllMultimediasFromEvent(@PathVariable Integer eventId) {
-//        return ResponseEntity.ok(multimediaService.getAllMultimediasFromEvent(eventId));
-        List<MultimediaDto> list = multimediaService.getAllMultimediasFromEvent(eventId);
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(multimediaService.getAllMultimediasFromEvent(eventId));
     }
 
     @PostMapping("/multimedias")
@@ -65,12 +63,13 @@ public class MultimediaController {
     @PostMapping("/multimedias/{id}/media")
     public ResponseEntity<MultimediaDto> assignMediaToMultimedia(@PathVariable("id") Integer multimediaId,
                                                                  @RequestBody MultipartFile file) {
+        String prefix = String.format("%d-", multimediaId);
         String url = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/download/")
-                .path(Objects.requireNonNull(file.getOriginalFilename()))
+                .path(Objects.requireNonNull(String.format("%s%s", prefix, file.getOriginalFilename())))
                 .toUriString();
-        String filename = mediaService.storeFile(file, url,String.format("%d-",multimediaId));
+        String filename = mediaService.storeFile(file, url, prefix);
         return ResponseEntity
                 .created(URI.create(url))
                 .body(multimediaService.assignMediaToMultiMedia(filename, multimediaId));
