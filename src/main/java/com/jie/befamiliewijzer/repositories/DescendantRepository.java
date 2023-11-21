@@ -11,8 +11,7 @@ public interface DescendantRepository extends JpaRepository<Descendant, String> 
             """
  WITH RECURSIVE tree AS (
    SELECT
-     (p.relation_id || '-' || relations.person_id) AS id,
-   ('person_id:' || relations.person_id || ' spouse_id:' || relations.spouse_id) AS comment,
+     (COALESCE(p.relation_id,0) || '-' || relations.person_id || '-' || COALESCE(relations.spouse_id,0)) AS id,
      p.relation_id AS relation_parent,
      relations.id AS relation_child,
      relations.person_id AS person_id,
@@ -31,8 +30,7 @@ public interface DescendantRepository extends JpaRepository<Descendant, String> 
         OR relations.spouse_id =?1
  UNION ALL
    SELECT
-     (relations.id || '-' || children.child_id) AS id,
-   ('person_id:' || relations.person_id || ' spouse_id:' || relations.spouse_id) AS comment,
+     (relations.id || '-' || children.child_id || '-' || COALESCE(spouses.id,0)) AS id,
      relations.id AS relation_parent,
      cr.id AS relation_child,
      children.child_id AS person_id,

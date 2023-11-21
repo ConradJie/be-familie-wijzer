@@ -133,7 +133,10 @@ public class PersonService {
             List<Relation> relations = relationRepository.findAllByPersonIdOrSpouseId(id, id);
             for (Relation relation : relations) {
                 if (Objects.equals(relation.getPerson().getId(), id)) {
-                    relation.setPerson(null);
+                    if (relation.getSpouse() != null) {
+                        relation.setPerson(relation.getSpouse());
+                        relation.setSpouse(null);
+                    }
                 } else if (Objects.equals(relation.getSpouse().getId(), id)) {
                     relation.setSpouse(null);
                 }
