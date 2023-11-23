@@ -109,7 +109,6 @@ public class PersonService {
                     ("there already exists such a person with the same given names and surname and gender");
         }
         Person person = transfer(dto);
-        personRepository.save(person);
         return transfer(person);
     }
 
@@ -136,20 +135,22 @@ public class PersonService {
                     if (relation.getSpouse() != null) {
                         relation.setPerson(relation.getSpouse());
                         relation.setSpouse(null);
+                    } else {
+                        relation.setPerson(null);
+                        //Detach child from parent (relation)
+                        Optional<Child> childOptional = childRepository.findByPersonId(id);
+                        if (childOptional.isPresent()) {
+                            Child child = childOptional.get();
+                            childService.deleteChildFromRelation(relation.getId(), child.getId());
+                        }
                     }
                 } else if (Objects.equals(relation.getSpouse().getId(), id)) {
                     relation.setSpouse(null);
                 }
-                relationRepository.save(relation);
+                relation = relationRepository.save(relation);
                 if (relation.getPerson() == null && relation.getSpouse() == null) {
                     relationService.deleteRelation(relation.getId());
                 }
-            }
-            Optional<Child> childOptional = childRepository.findByPersonId(id);
-            if (childOptional.isPresent()) {
-                childService.deleteChildFromRelation
-                        (childOptional.get().getRelation().getId(),
-                                childOptional.get().getId());
             }
             personRepository.deleteById(id);
         }
