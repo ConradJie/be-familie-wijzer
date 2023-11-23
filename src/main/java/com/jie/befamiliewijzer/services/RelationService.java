@@ -5,7 +5,6 @@ import com.jie.befamiliewijzer.dtos.RelationInputDto;
 import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
 import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
-import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
@@ -69,8 +68,6 @@ public class RelationService {
                     relationSpouseDto.spouseSex = relation.getPerson().getSex();
                     list.add(relationSpouseDto);
                 }
-            } else {
-                single = true;
             }
             if (relation.getSpouse() != null) {
                 if (!relation.getSpouse().getId().equals(personId)) {
@@ -118,7 +115,7 @@ public class RelationService {
             throw new ResourceAlreadyExistsException("The relation already Exists");
         }
         Relation relation = transfer(dto);
-        relationRepository.save(relation);
+        relation = relationRepository.save(relation);
         return transfer(relation);
     }
 
@@ -135,14 +132,18 @@ public class RelationService {
             relation.setPerson(person);
         }
         if (dto.spouseId == null) {
-            relation.setPerson(null);
+            relation.setSpouse(null);
         } else {
             Person spouse = personRepository
                     .findById(dto.spouseId)
                     .orElseThrow(() -> new ResourceNotFoundException("The requested spouse could not be found"));
             relation.setSpouse(spouse);
         }
-        relationRepository.save(relation);
+        if (relation.getPerson() == null && relation.getSpouse() != null) {
+            relation.setPerson(relation.getSpouse());
+            relation.setSpouse(null);
+        }
+        relation = relationRepository.save(relation);
         return transfer(relation);
     }
 
@@ -152,11 +153,13 @@ public class RelationService {
             Relation relation = relationRepository.findById(id).get();
             relation.setPerson(null);
             relation.setSpouse(null);
-            for (Child child : relation.getChildren()) {
-                child.setPerson(null);
-                childRepository.save(child);
+            if (relation.getChildren() != null) {
+                for (Child child : relation.getChildren()) {
+                    child.setPerson(null);
+                    child = childRepository.save(child);
+                }
             }
-            relationRepository.save(relation);
+            relation = relationRepository.save(relation);
             relationRepository.deleteById(id);
         }
     }
@@ -166,12 +169,17 @@ public class RelationService {
                 .findById(relationId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
         if (Objects.equals(relation.getPerson().getId(), personId)) {
-            relation.setPerson(null);
+            if (relation.getSpouse()!=null) {
+                relation.setPerson(relation.getSpouse());
+                relation.setSpouse(null);
+            } else {
+                relation.setPerson(null);
+            }
         } else if (Objects.equals(relation.getSpouse().getId(), personId)) {
             relation.setSpouse(null);
         }
-        relationRepository.save(relation);
-        if (relation.getPerson().getId() == null && relation.getSpouse().getId() == null) {
+        relation = relationRepository.save(relation);
+        if (relation.getPerson() == null && relation.getSpouse() == null) {
             deleteRelation(relationId);
         }
     }
