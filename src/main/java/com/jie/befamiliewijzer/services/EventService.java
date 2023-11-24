@@ -98,7 +98,7 @@ public class EventService {
         dto.relationId = null;
         Event event = transfer(dto);
         event.setPerson(person);
-        eventRepository.save(event);
+        event = eventRepository.save(event);
         return transfer(event);
     }
 
@@ -117,7 +117,7 @@ public class EventService {
         dto.personId = null;
         Event event = transfer(dto);
         event.setRelation(relation);
-        eventRepository.save(event);
+        event = eventRepository.save(event);
         return transfer(event);
     }
 
@@ -183,7 +183,7 @@ public class EventService {
         event.setBeginDate(dto.beginDate);
         event.setEndDate(dto.endDate);
         event.setPerson(person);
-        eventRepository.save(event);
+        event = eventRepository.save(event);
         return transfer(event);
     }
 
@@ -203,7 +203,7 @@ public class EventService {
         event.setBeginDate(dto.beginDate);
         event.setEndDate(dto.endDate);
         event.setRelation(relation);
-        eventRepository.save(event);
+        event = eventRepository.save(event);
         return transfer(event);
     }
 
@@ -214,7 +214,7 @@ public class EventService {
                     .findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
             event.setPerson(null);
-            eventRepository.save(event);
+            event = eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
@@ -226,7 +226,7 @@ public class EventService {
                     .findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
             event.setRelation(null);
-            eventRepository.save(event);
+            event = eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
