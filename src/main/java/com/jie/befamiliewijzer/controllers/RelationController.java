@@ -32,7 +32,7 @@ public class RelationController {
     }
 
     @GetMapping("/relations/persons/{personId}/{spouseId}")
-    public ResponseEntity<RelationDto> getRelation(@PathVariable Integer personId, @PathVariable Integer spouseId) {
+    public ResponseEntity<RelationDto> getRelationByPersonIdAndSpouseId(@PathVariable Integer personId, @PathVariable Integer spouseId) {
         return ResponseEntity.ok(relationService.getRelationByPersonIdAndSpouseId(personId, spouseId));
     }
 
