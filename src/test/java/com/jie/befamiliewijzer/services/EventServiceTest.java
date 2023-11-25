@@ -3,7 +3,6 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
 import com.jie.befamiliewijzer.dtos.EventTypeDto;
-import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Event;
@@ -13,9 +12,6 @@ import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.PersonRepository;
 import com.jie.befamiliewijzer.repositories.RelationRepository;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.*;
 
