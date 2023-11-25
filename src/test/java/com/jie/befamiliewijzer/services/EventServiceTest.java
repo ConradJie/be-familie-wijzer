@@ -31,8 +31,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -593,6 +592,339 @@ class EventServiceTest {
     }
 
     @Test
+    void testCreateEventFromPersonInvalidEventType() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Date dateOfDeath = new Date(1999, Calendar.JANUARY, 1);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "WRONG";
+        inputDto.description = "Before";
+        inputDto.beginDate = dateOfDeath;
+        inputDto.endDate = dateOfDeath;
+        inputDto.personId = 11;
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("The event type could not be processed", thrown.getMessage());
+
+    }
+
+    @Test
+    void testCreateEventFromPersonInvalidBegibEndDate() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "BIRTH";
+        inputDto.description = "Before";
+        inputDto.beginDate = new Date(2000, Calendar.JANUARY, 1);
+        inputDto.endDate = new Date(1999, Calendar.JANUARY, 1);
+        inputDto.personId = 11;
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("The begin date occurred after the end date", thrown.getMessage());
+
+    }
+
+    @Test
+    void testCreateEventFromPersonSingleEventAlreadyExist() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event birth = new Event();
+        birth.setId(30);
+        birth.setEventType("BIRTH");
+        birth.setDescription("Birthday");
+        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setPerson(john);
+
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "BIRTH";
+        inputDto.description = "Before";
+        inputDto.beginDate = new Date(1999, Calendar.DECEMBER, 1);
+        inputDto.endDate = new Date(1999, Calendar.DECEMBER, 1);
+        inputDto.personId = 11;
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findByPersonIdAndEventType(anyInt(), anyString())).thenReturn(Optional.of(birth));
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("Such an event (BIRTH) already exists", thrown.getMessage());
+
+    }
+
+    @Test
+    void testUpdateEventFromPersonBirthDeath() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event birth = new Event();
+        birth.setId(30);
+        birth.setEventType("BIRTH");
+        birth.setDescription("Birthday");
+        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setPerson(john);
+
+        Event death = new Event();
+        death.setId(31);
+        death.setEventType("DEATH");
+        death.setDescription("Date of Death");
+        death.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setPerson(john);
+
+        Date newDate = new Date(2020, Calendar.NOVEMBER, 30);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "DEATH";
+        inputDto.description = "Date of Death";
+        inputDto.beginDate = newDate;
+        inputDto.endDate = newDate;
+
+        List<Event> events = new ArrayList<>();
+        events.add(birth);
+        events.add(death);
+
+        Event eventResult = new Event();
+        eventResult.setId(31);
+        eventResult.setEventType("DEATH");
+        eventResult.setDescription("Date of Death");
+        eventResult.setBeginDate(newDate);
+        eventResult.setEndDate(newDate);
+        eventResult.setPerson(john);
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findById(anyInt())).thenReturn(Optional.of(death));
+        when(eventRepository.findEventsByPersonIdOrderByBeginDate(anyInt())).thenReturn(events);
+        when(eventRepository.save(any(Event.class))).thenReturn(eventResult);
+
+        EventDto dto = eventService.updateEventFromPerson(11, 31, inputDto);
+
+        assertEquals(31, dto.id);
+        assertEquals("DEATH", dto.eventType);
+        assertEquals("Date of Death", dto.description);
+        assertEquals(newDate, dto.beginDate);
+        assertEquals(newDate, dto.endDate);
+        assertEquals(11, dto.personId);
+        assertEquals(null, dto.relationId);
+
+    }
+
+
+    @Test
+    void testUpdateEventFromPersonBeforeBirth() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event birth = new Event();
+        birth.setId(30);
+        birth.setEventType("BIRTH");
+        birth.setDescription("Birthday");
+        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setPerson(john);
+
+        Event death = new Event();
+        death.setId(31);
+        death.setEventType("DEATH");
+        death.setDescription("Date of Death");
+        death.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setPerson(john);
+
+        Date newDate = new Date(1998, Calendar.NOVEMBER, 30);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "DEATH";
+        inputDto.description = "Date of Death";
+        inputDto.beginDate = newDate;
+        inputDto.endDate = newDate;
+
+        List<Event> events = new ArrayList<>();
+        events.add(birth);
+        events.add(death);
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findById(anyInt())).thenReturn(Optional.of(death));
+        when(eventRepository.findEventsByPersonIdOrderByBeginDate(anyInt())).thenReturn(events);
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.updateEventFromPerson(11, 31, inputDto);
+        });
+
+        Assertions.assertEquals("The event occurred before the date of birth", thrown.getMessage());
+
+    }
+
+
+    @Test
+    void testCreteEventFromPersonDeathBeforeEvnts() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event birth = new Event();
+        birth.setId(30);
+        birth.setEventType("BIRTH");
+        birth.setDescription("Birthday");
+        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setPerson(john);
+
+        Event others = new Event();
+        others.setId(31);
+        others.setEventType("OTHERS");
+        others.setDescription("Other event");
+        others.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
+        others.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        others.setPerson(john);
+
+        Date newDate = new Date(2018, Calendar.NOVEMBER, 30);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "DEATH";
+        inputDto.description = "Date of Death";
+        inputDto.beginDate = newDate;
+        inputDto.endDate = newDate;
+
+        List<Event> events = new ArrayList<>();
+        events.add(birth);
+        events.add(others);
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findEventsByPersonIdOrderByBeginDate(anyInt())).thenReturn(events);
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("The date of death occurrs before previous events", thrown.getMessage());
+
+    }
+
+    @Test
+    void testCreteEventFromPersonAfterDeath() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event birth = new Event();
+        birth.setId(30);
+        birth.setEventType("BIRTH");
+        birth.setDescription("Birthday");
+        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setPerson(john);
+
+        Event death = new Event();
+        death.setId(31);
+        death.setEventType("DEATH");
+        death.setDescription("Date of Death");
+        death.setBeginDate(new Date(2018, Calendar.DECEMBER, 1));
+        death.setEndDate(new Date(2018, Calendar.DECEMBER, 1));
+        death.setPerson(john);
+
+        Date newDate = new Date(2020, Calendar.NOVEMBER, 30);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "OTHERS";
+        inputDto.description = "Other event";
+        inputDto.beginDate = newDate;
+        inputDto.endDate = newDate;
+
+        List<Event> events = new ArrayList<>();
+        events.add(birth);
+        events.add(death);
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findEventsByPersonIdOrderByBeginDate(anyInt())).thenReturn(events);
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("The event occurrs after the date of death", thrown.getMessage());
+
+    }
+
+    @Test
+    void testCreteEventFromPersonBirthAfterEvent() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Event others = new Event();
+        others.setId(30);
+        others.setEventType("OTHERS");
+        others.setDescription("Other event");
+        others.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
+        others.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        others.setPerson(john);
+
+        Event AnOther = new Event();
+        AnOther.setId(30);
+        AnOther.setEventType("OTHERS");
+        AnOther.setDescription("Other event");
+        AnOther.setBeginDate(new Date(2005, Calendar.JANUARY, 1));
+        AnOther.setEndDate(new Date(2005, Calendar.JANUARY, 1));
+        AnOther.setPerson(john);
+
+
+        Date newDate = new Date(2006, Calendar.NOVEMBER, 30);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "BIRTH";
+        inputDto.description = "Date of Birth";
+        inputDto.beginDate = newDate;
+        inputDto.endDate = newDate;
+
+        List<Event> events = new ArrayList<>();
+        events.add(others);
+        events.add(AnOther);
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(eventRepository.findEventsByPersonIdOrderByBeginDate(anyInt())).thenReturn(events);
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("The date of birth occurrs after previous events", thrown.getMessage());
+
+    }
+
+    @Test
     void testUpdateEventFromRelation() {
         Date date = new Date(2023, Calendar.MAY, 1);
 
@@ -686,6 +1018,15 @@ class EventServiceTest {
         relation.setChildren(null);
         relation.setEvents(null);
 
+        Event event = new Event();
+        event.setId(30);
+        event.setEventType("OTHERS");
+        event.setDescription("Test");
+        event.setText("Testing");
+        event.setBeginDate(date);
+        event.setEndDate(date);
+        event.setPerson(null);
+        event.setRelation(relation);
 
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "WRONG";
@@ -697,9 +1038,10 @@ class EventServiceTest {
         inputDto.relationId = 60;
 
         when(relationRepository.findById(anyInt())).thenReturn(Optional.of(relation));
+        when(eventRepository.findById(anyInt())).thenReturn(Optional.of(event));
 
         UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
-            EventDto dto = eventService.createEventFromRelation(60, inputDto);
+            EventDto dto = eventService.updateEventFromRelation(60, 30, inputDto);
         });
 
         Assertions.assertEquals("The event type could not be processed", thrown.getMessage());
