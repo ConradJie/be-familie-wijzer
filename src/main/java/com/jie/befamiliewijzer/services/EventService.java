@@ -164,7 +164,7 @@ public class EventService {
             } else if (dto.eventType.equals("BIRTH")
                     && dto.beginDate.compareTo(endOfPeriod) > 0
                     && (dto.beginDate.compareTo(endOfPeriodPrev) > 0 && !Objects.equals(eventId, endOfPeriodPrevId))) {
-                throw new UnprocessableEntityException("The birth of death occurrs after previous events");
+                throw new UnprocessableEntityException("The date of birth occurrs after previous events");
             }
         }
     }
