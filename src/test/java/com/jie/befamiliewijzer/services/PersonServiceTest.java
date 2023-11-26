@@ -4,6 +4,7 @@ import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.dtos.PersonInputDto;
 import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
+import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Person;
@@ -339,7 +340,7 @@ class PersonServiceTest {
             PersonDto dto = personService.createPerson(inputDto);
         });
 
-        Assertions.assertEquals("there already exists such a person with the same given names and surname and gender", thrown.getMessage());
+        Assertions.assertEquals("There already exists such a person with the same given names and surname and gender", thrown.getMessage());
 
     }
 
@@ -386,6 +387,36 @@ class PersonServiceTest {
             PersonDto dto = personService.updatePerson(11, inputDto);
         });
         Assertions.assertEquals("The sex type could not be processed", thrown.getMessage());
+    }
+
+    @Test
+    void testUpdatePersonExists() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+//        Person jones = new Person();
+//        jones.setId(12);
+//        jones.setGivenNames("Jones");
+//        jones.setSurname("Doe");
+//        jones.setSex("M");
+
+        PersonInputDto inputDto = new PersonInputDto();
+        inputDto.givenNames = "Jones";
+        inputDto.surname = "Doe";
+        inputDto.sex = "M";
+
+        when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
+        when(personRepository.existsByGivenNamesAndSurnameAndSex(anyString(), anyString(), anyString())).thenReturn(true);
+
+        ResourceAlreadyExistsException thrown = Assertions.assertThrows(ResourceAlreadyExistsException.class, () -> {
+            PersonDto dto = personService.updatePerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("There already exists such a person with the same given names and surname and gender", thrown.getMessage());
+
     }
 
     @Test
@@ -531,7 +562,7 @@ class PersonServiceTest {
         personService.deletePerson(11);
 
         Mockito.verify(relationService, times(1)).deleteRelation(anyInt());
-        Mockito.verify(childService, times(1)).deleteChildFromRelation(anyInt(),anyInt());
+        Mockito.verify(childService, times(1)).deleteChildFromRelation(anyInt(), anyInt());
         Mockito.verify(personRepository, times(1)).deleteById(anyInt());
     }
 

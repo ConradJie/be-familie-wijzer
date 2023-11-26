@@ -4,6 +4,7 @@ import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.dtos.PersonDto;
 import com.jie.befamiliewijzer.dtos.PersonInputDto;
 import com.jie.befamiliewijzer.dtos.RelationSpouseDto;
+import com.jie.befamiliewijzer.exceptions.ResourceAlreadyExistsException;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
@@ -106,9 +107,10 @@ public class PersonService {
         }
         if (personRepository.existsByGivenNamesAndSurnameAndSex(dto.givenNames, dto.surname, dto.sex)) {
             throw new UnprocessableEntityException
-                    ("there already exists such a person with the same given names and surname and gender");
+                    ("There already exists such a person with the same given names and surname and gender");
         }
         Person person = transfer(dto);
+        personRepository.save(person);
         return transfer(person);
     }
 
@@ -118,6 +120,11 @@ public class PersonService {
                 .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");
+        }
+        if ((!person.getGivenNames().equals(dto.givenNames) || !person.getSurname().equals(dto.surname) || !person.getSex().equals(dto.sex))
+                && personRepository.existsByGivenNamesAndSurnameAndSex(dto.givenNames, dto.surname, dto.sex)) {
+            throw new ResourceAlreadyExistsException
+                    ("There already exists such a person with the same given names and surname and gender");
         }
         person.setGivenNames(dto.givenNames);
         person.setSurname(dto.surname);
