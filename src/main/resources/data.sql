@@ -1,3 +1,11 @@
+INSERT INTO users (username, password, email, enabled) VALUES ('user', '$2a$12$CBfXWsWXAVbH3BLFOiZNpuOTGzGdkR.0YnUaHdW2cu93fKkZ9FW3y','user@test.nl', TRUE);
+INSERT INTO users (username, password, email, enabled) VALUES ('admin', '$2a$12$CBfXWsWXAVbH3BLFOiZNpuOTGzGdkR.0YnUaHdW2cu93fKkZ9FW3y', 'admin@test.nl', TRUE);
+INSERT INTO users (username, password, email, enabled) VALUES ('test', '$2a$12$CBfXWsWXAVbH3BLFOiZNpuOTGzGdkR.0YnUaHdW2cu93fKkZ9FW3y', 'test@test.nl', TRUE);
+INSERT INTO authorities(username,authority) VALUES ('admin','ROLE_ADMIN');
+INSERT INTO authorities(username,authority) VALUES ('user','ROLE_USER');
+INSERT INTO authorities(username,authority) VALUES ('test','ROLE_USER');
+
+
 INSERT INTO persons (given_names, surname, sex)
 VALUES ('Grandfather', 'Doe', 'M'),     -- 1
        ('Grandmother', 'Roe', 'F'),     -- 2
