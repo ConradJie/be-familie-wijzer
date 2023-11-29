@@ -67,9 +67,32 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                                         /*TODO voeg de requestmatchers toe voor admin(post en delete) en user (overige)*/
                                         .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.POST,"/persons").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.PUT,"/persons/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.GET,"/persons").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.GET,"/persons/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.DELETE,"/persons/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.POST, "/relations").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.PUT, "/relations/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.DELETE, "/relations/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.GET, "/relations").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.GET, "/relations/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.POST,"/persons/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.POST,"/relations/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.GET, "/eventtypes").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.GET, "/eventtypes/**").hasAnyRole("ADMIN","USER")
 
-                                .requestMatchers(HttpMethod.GET, "/persons").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.POST, "/events/*/multimedias").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.PUT, "/events/*/multimedias/*").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.POST, "/multimedias/*/media").hasAnyRole("ADMIN","USER")
+
+                                        .requestMatchers(HttpMethod.POST, "/events/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.POST, "/multimedias/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.PUT, "/events/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.GET, "/events/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.GET, "/multimedias/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.DELETE, "/events/**").hasRole("ADMIN")
+
                                         .requestMatchers("/authenticated").authenticated()
                                         .requestMatchers("/authenticate").permitAll()/*alleen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
                                         .anyRequest().denyAll()
