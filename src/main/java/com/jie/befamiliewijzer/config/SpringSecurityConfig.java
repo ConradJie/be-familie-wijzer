@@ -66,16 +66,10 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                                         /*TODO voeg de requestmatchers toe voor admin(post en delete) en user (overige)*/
-                                        .requestMatchers(HttpMethod.POST, "/cimodules").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.DELETE, "/cimodules/**").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.POST, "/remotecontrollers").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.DELETE, "/remotecontrollers/**").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.POST, "/televisions").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.DELETE, "/televisions/**").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.POST, "/wallbrackets").hasRole("ADMIN")
-                                        .requestMatchers(HttpMethod.DELETE, "/wallbrackets/**").hasRole("ADMIN")
-                                        .requestMatchers("/cimodules", "/remotecontrollers", "/televisions", "/wallbrackets").hasAnyRole("ADMIN", "USER")
+                                        .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("ADMIN","USER")
+                                        .requestMatchers(HttpMethod.GET,"/persons").hasAnyRole("ADMIN","USER")
 
+                                .requestMatchers(HttpMethod.GET, "/persons").hasRole("ADMIN")
                                         .requestMatchers("/authenticated").authenticated()
                                         .requestMatchers("/authenticate").permitAll()/*alleen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
                                         .anyRequest().denyAll()
