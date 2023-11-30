@@ -3,6 +3,8 @@ package com.jie.befamiliewijzer.controllers;
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
 import com.jie.befamiliewijzer.dtos.EventTypeDto;
+import com.jie.befamiliewijzer.filter.JwtRequestFilter;
+import com.jie.befamiliewijzer.services.CustomUserDetailsService;
 import com.jie.befamiliewijzer.services.EventService;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -30,9 +33,16 @@ import static org.mockito.ArgumentMatchers.anyInt;
 
 @WebMvcTest(EventController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class EventControllerTest {
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    JwtRequestFilter jwtRequestFilter;
 
     @MockBean
     EventService eventService;
