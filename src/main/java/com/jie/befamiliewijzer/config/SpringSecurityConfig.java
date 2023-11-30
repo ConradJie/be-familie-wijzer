@@ -92,6 +92,7 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.GET, "/events/**").hasAnyRole("ADMIN","USER")
                                         .requestMatchers(HttpMethod.GET, "/multimedias/**").hasAnyRole("ADMIN","USER")
                                         .requestMatchers(HttpMethod.DELETE, "/events/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.GET, "/descendants/*").hasAnyRole("ADMIN","USER")
 
                                         .requestMatchers("/authenticated").authenticated()
                                         .requestMatchers("/authenticate").permitAll()/*alleen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/

@@ -1,12 +1,15 @@
 package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.*;
+import com.jie.befamiliewijzer.filter.JwtRequestFilter;
+import com.jie.befamiliewijzer.services.CustomUserDetailsService;
 import com.jie.befamiliewijzer.services.RelationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -24,9 +27,16 @@ import static org.mockito.ArgumentMatchers.*;
 
 @WebMvcTest(RelationController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class RelationControllerTest {
     @Autowired
     MockMvc mockMvc;
+
+    @MockBean
+    JwtRequestFilter jwtRequestFilter;
+
+    @MockBean
+    CustomUserDetailsService customUserDetailsService;
 
     @MockBean
     RelationService relationService;
