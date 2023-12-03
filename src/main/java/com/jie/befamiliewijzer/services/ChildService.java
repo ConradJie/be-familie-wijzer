@@ -4,6 +4,7 @@ import com.jie.befamiliewijzer.dtos.ChildDto;
 import com.jie.befamiliewijzer.dtos.ChildInputDto;
 import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
+import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
 import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
@@ -61,8 +62,15 @@ public class ChildService {
 
 
     public ChildDto createChildFromRelation(Integer relationId, ChildInputDto dto) {
-        if (relationId != dto.relationId || !relationRepository.existsById(relationId)) {
+        if (relationId != dto.relationId) {
             throw new ResourceNotFoundException("The requested relation could not be found");
+        }
+        Relation relation = relationRepository
+                .findById(relationId)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
+        if (relation.getPerson().getId() == dto.personId
+                || (relation.getSpouse() != null && relation.getSpouse().getId() == dto.personId)) {
+            throw new UnprocessableEntityException("Parent and child are the same person");
         }
         if (childRepository.existsByRelation_IdAndPersonId(relationId, dto.personId)) {
             throw new ResourceNotFoundException("This child already exists");
