@@ -1,5 +1,6 @@
 package com.jie.befamiliewijzer.services;
 
+import com.jie.befamiliewijzer.dtos.MultimediaBlobDto;
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
@@ -11,23 +12,25 @@ import com.jie.befamiliewijzer.repositories.MultimediaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 public class MultimediaService {
     private final MultimediaRepository multimediaRepository;
     private final EventRepository eventRepository;
     private final MediaRepository mediaRepository;
+    private final MediaService mediaService;
 
     public MultimediaService(MultimediaRepository multimediaRepository,
                              EventRepository eventRepository,
-                             MediaRepository mediaRepository) {
+                             MediaRepository mediaRepository,
+                             MediaService mediaService) {
         this.multimediaRepository = multimediaRepository;
         this.eventRepository = eventRepository;
         this.mediaRepository = mediaRepository;
+        this.mediaService = mediaService;
     }
 
     public MultimediaDto getMultimedia(Integer id) {
@@ -52,6 +55,33 @@ public class MultimediaService {
             throw new ResourceNotFoundException("The requested event could not be found");
         }
         return transfer(multimediaRepository.findAllByEventId(eventId));
+    }
+
+    public List<MultimediaBlobDto> getAllMultimediaBlobsFromEvent(Integer eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new ResourceNotFoundException("The requested event could not be found");
+        }
+        List<Multimedia> multimediaList = multimediaRepository.findAllByEventId(eventId);
+        List<MultimediaBlobDto> dtos = new ArrayList<>();
+        for (Multimedia multimedia : multimediaList) {
+            MultimediaBlobDto dto = new MultimediaBlobDto();
+            dto.id = multimedia.getId();
+            dto.description = multimedia.getDescription();
+            dto.filename = multimedia.getFilename();
+            dto.eventId = multimedia.getId();
+            dto.contentType = multimedia.getMedia().getContentType();
+            try {
+                String path = mediaService.downLoadFile(multimedia.getFilename())
+                        .getFile().getAbsolutePath();
+
+                byte[] imageBytes = Files.readAllBytes(Paths.get(path));
+                dto.blob = Base64.getEncoder().encodeToString(imageBytes);
+            } catch (Exception e) {
+                dto.blob = null;
+            }
+            dtos.add(dto);
+        }
+        return dtos;
     }
 
     public MultimediaDto createMultimedia(MultimediaInputDto dto) {
