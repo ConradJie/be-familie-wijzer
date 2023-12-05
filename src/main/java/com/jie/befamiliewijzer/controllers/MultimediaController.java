@@ -1,5 +1,6 @@
 package com.jie.befamiliewijzer.controllers;
 
+import com.jie.befamiliewijzer.dtos.MultimediaBlobDto;
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
 import com.jie.befamiliewijzer.models.Media;
@@ -39,6 +40,11 @@ public class MultimediaController {
     @GetMapping("/events/{eventId}/multimedias")
     public ResponseEntity<List<MultimediaDto>> getAllMultimediasFromEvent(@PathVariable Integer eventId) {
         return ResponseEntity.ok(multimediaService.getAllMultimediasFromEvent(eventId));
+    }
+
+    @GetMapping("/events/{eventId}/multimediablobs")
+    public ResponseEntity<List<MultimediaBlobDto>> getAllMultimediaBlobsFromEvent(@PathVariable Integer eventId) {
+        return ResponseEntity.ok(multimediaService.getAllMultimediaBlobsFromEvent(eventId));
     }
 
     @PostMapping("/multimedias")
