@@ -178,6 +178,9 @@ public class RelationService {
         } else if (Objects.equals(relation.getSpouse().getId(), personId)) {
             relation.setSpouse(null);
         }
+        if (relation.getChildren().size() == 0) {
+            relation.setPerson(null);
+        }
         relation = relationRepository.save(relation);
         if (relation.getPerson() == null && relation.getSpouse() == null) {
             deleteRelation(relationId);
