@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.services;
 
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
+import com.jie.befamiliewijzer.dtos.EventMonthDayDto;
 import com.jie.befamiliewijzer.dtos.EventTypeDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
@@ -89,6 +90,61 @@ public class EventService {
         }
     }
 
+    public List<EventMonthDayDto> getAllCelebrateEventsOnMonthDay(Integer month, Integer day) {
+        List<EventMonthDayDto> dtos = new ArrayList<>();
+        List<Event> events = eventRepository.findAllEventsOnMonthDay(month, day);
+        for (Event event : events) {
+            if (event.getEventType().equals("MARRIAGE")) {
+                Optional<Event> divorce = eventRepository.
+                        findEventByRelationIdAndEventType(event.getRelation().getId(),"DIVORCE");
+                if (divorce.isPresent()) {
+                    continue;                }
+            } else if (event.getEventType().equals("BIRTH")) {
+                Optional<Event> death = eventRepository.
+                        findByPersonIdAndEventType(event.getPerson().getId(),"DEATH");
+                if (death.isPresent()) {
+                    continue;                }
+            } else {
+                continue;
+            }
+            EventMonthDayDto dto = new EventMonthDayDto();
+            dto.id = event.getId();
+            dto.eventType = event.getEventType();
+            dto.description = event.getDescription();
+            dto.text = event.getText();
+            dto.date = event.getBeginDate();
+            if (event.getPerson() != null) {
+                Optional<Person> personOptional = personRepository.findById(event.getPerson().getId());
+                if (personOptional.isPresent()) {
+                    Person person = personOptional.get();
+                    dto.givenNames = person.getGivenNames();
+                    dto.surname = person.getSurname();
+                }
+            } else {
+                Optional<Relation> relationOptional = relationRepository.findById(event.getRelation().getId());
+                if (relationOptional.isPresent()) {
+                    Relation relation = relationOptional.get();
+                    Optional<Person> personOptional = personRepository.findById(relation.getPerson().getId());
+                    if (personOptional.isPresent()) {
+                        Person person = personOptional.get();
+                        dto.givenNames = person.getGivenNames();
+                        dto.surname = person.getSurname();
+                    }
+                    if (relation.getSpouse() != null) {
+                        Optional<Person> spouseOptional = personRepository.findById(relation.getSpouse().getId());
+                        if (spouseOptional.isPresent()) {
+                            Person spouse = spouseOptional.get();
+                            dto.spouseGivenNames = spouse.getGivenNames();
+                            dto.spouseSurname = spouse.getSurname();
+                        }
+                    }
+                }
+            }
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
     public EventDto createEventFromPerson(Integer personId, EventInputDto dto) {
         Person person = personRepository
                 .findById(personId)
@@ -157,14 +213,14 @@ public class EventService {
             } else if (dto.eventType.equals("DEATH")
                     && (dto.endDate.compareTo(beginOfPeriod) < 0
                     || (dto.endDate.compareTo(beginOfPeriodNext) < 0 && !Objects.equals(eventId, beginOfPeriodNextId)))) {
-                throw new UnprocessableEntityException("The date of death occurrs before previous events");
+                throw new UnprocessableEntityException("The date of death occurs before previous events");
             }
             if (death && !selfEndOfPeriod && endOfPeriod.compareTo(dto.beginDate) < 0) {
-                throw new UnprocessableEntityException("The event occurrs after the date of death");
+                throw new UnprocessableEntityException("The event occurs after the date of death");
             } else if (dto.eventType.equals("BIRTH")
                     && dto.beginDate.compareTo(endOfPeriod) > 0
                     && (dto.beginDate.compareTo(endOfPeriodPrev) > 0 && !Objects.equals(eventId, endOfPeriodPrevId))) {
-                throw new UnprocessableEntityException("The date of birth occurrs after previous events");
+                throw new UnprocessableEntityException("The date of birth occurs after previous events");
             }
         }
     }
@@ -214,7 +270,7 @@ public class EventService {
                     .findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
             event.setPerson(null);
-            event = eventRepository.save(event);
+            eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
@@ -226,7 +282,7 @@ public class EventService {
                     .findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("The requested event could not be found"));
             event.setRelation(null);
-            event = eventRepository.save(event);
+            eventRepository.save(event);
             eventRepository.deleteById(id);
         }
     }
