@@ -64,22 +64,28 @@ public class MultimediaService {
         List<Multimedia> multimediaList = multimediaRepository.findAllByEventId(eventId);
         List<MultimediaBlobDto> dtos = new ArrayList<>();
         for (Multimedia multimedia : multimediaList) {
-            MultimediaBlobDto dto = new MultimediaBlobDto();
-            dto.id = multimedia.getId();
-            dto.description = multimedia.getDescription();
-            dto.filename = multimedia.getFilename();
-            dto.eventId = multimedia.getId();
-            dto.contentType = multimedia.getMedia().getContentType();
-            try {
-                String path = mediaService.downLoadFile(multimedia.getFilename())
-                        .getFile().getAbsolutePath();
+            if (multimedia.getMedia() != null) {
+                String blob;
+                try {
+                    String path = mediaService.downLoadFile(multimedia.getFilename())
+                            .getFile().getAbsolutePath();
 
-                byte[] imageBytes = Files.readAllBytes(Paths.get(path));
-                dto.blob = Base64.getEncoder().encodeToString(imageBytes);
-            } catch (Exception e) {
-                dto.blob = null;
+                    byte[] imageBytes = Files.readAllBytes(Paths.get(path));
+                    blob = Base64.getEncoder().encodeToString(imageBytes);
+                } catch (Exception e) {
+                    blob = null;
+                }
+                if (blob != null) {
+                    MultimediaBlobDto dto = new MultimediaBlobDto();
+                    dto.id = multimedia.getId();
+                    dto.description = multimedia.getDescription();
+                    dto.filename = multimedia.getFilename();
+                    dto.eventId = multimedia.getId();
+                    dto.contentType = multimedia.getMedia().getContentType();
+                    dto.blob = blob;
+                    dtos.add(dto);
+                }
             }
-            dtos.add(dto);
         }
         return dtos;
     }
