@@ -60,6 +60,11 @@ public class PersonController {
         return ResponseEntity.ok(personService.getParentsPerson(id));
     }
 
+    @GetMapping("/persons/nospouses")
+    public ResponseEntity<List<PersonDto>> getPersonsInRelationsWithoutSpouses() {
+        return ResponseEntity.ok(personService.getPersonsInRelationsWithoutSpouses());
+    }
+
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
         PersonDto personDto = personService.createPerson(personInputDto);

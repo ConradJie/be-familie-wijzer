@@ -13,4 +13,6 @@ public interface RelationRepository extends JpaRepository<Relation,Integer> {
     boolean existsByPersonIdAndSpouseId(Integer personId, Integer spouseId);
     Optional<Relation> findByPersonIdAndSpouseId(Integer personId, Integer spouseId);
     List<Relation> findAllByPersonIdOrSpouseId(Integer personId,Integer spouseId);
+    List<Relation> findRelationBySpouseIsNull();
+
 }
