@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface MultimediaRepository extends JpaRepository<Multimedia, Integer> {
     List<Multimedia> findAllByEventId(Integer eventId);
+    List<Multimedia> findAllByFilenameIs(String filename);
 }

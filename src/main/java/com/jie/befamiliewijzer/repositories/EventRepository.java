@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
+    Optional<Event> findAllById(Integer id);
     Optional<Event> findByPersonIdAndId(Integer personId, Integer id);
 
     Optional<Event> findByRelationIdAndId(Integer relationId, Integer id);

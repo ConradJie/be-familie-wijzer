@@ -3,6 +3,7 @@ package com.jie.befamiliewijzer.controllers;
 import com.jie.befamiliewijzer.dtos.MultimediaBlobDto;
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
+import com.jie.befamiliewijzer.dtos.MultimediaNoMediaDto;
 import com.jie.befamiliewijzer.models.Media;
 import com.jie.befamiliewijzer.services.MediaService;
 import com.jie.befamiliewijzer.services.MultimediaService;
@@ -54,6 +55,11 @@ public class MultimediaController {
                 .fromCurrentRequest()
                 .path("/" + multimediaDto.id).toUriString());
         return ResponseEntity.created(uri).body(multimediaDto);
+    }
+
+    @GetMapping("/persons/multimedias/nomedia")
+    public ResponseEntity<List<MultimediaNoMediaDto>> getAllMultimediaWithoutMediaAssigned() {
+        return ResponseEntity.ok(multimediaService.getAllMultimediaWithoutMediaAssigned());
     }
 
     @PostMapping("/events/{eventId}/multimedias")
