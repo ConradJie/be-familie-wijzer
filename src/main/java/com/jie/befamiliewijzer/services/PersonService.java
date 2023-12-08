@@ -113,6 +113,11 @@ public class PersonService {
         return dtos;
     }
 
+    public List<PersonDto> getPersonsWithoutRelationsOrChildOf() {
+        List<Person> list = personRepository.findAllPersonswithoutRelationsOrChildOf();
+        return transfer(list);
+    }
+
     public PersonDto createPerson(PersonInputDto dto) {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");

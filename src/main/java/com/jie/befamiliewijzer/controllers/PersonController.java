@@ -65,6 +65,11 @@ public class PersonController {
         return ResponseEntity.ok(personService.getPersonsInRelationsWithoutSpouses());
     }
 
+    @GetMapping("/persons/solo")
+    public ResponseEntity<List<PersonDto>> getPersonsWithoutRelationsOrChildOf() {
+        return ResponseEntity.ok(personService.getPersonsWithoutRelationsOrChildOf());
+    }
+
     @PostMapping("/persons")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody PersonInputDto personInputDto) {
         PersonDto personDto = personService.createPerson(personInputDto);
