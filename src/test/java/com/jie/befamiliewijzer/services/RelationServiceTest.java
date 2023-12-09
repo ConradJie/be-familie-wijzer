@@ -515,6 +515,7 @@ class RelationServiceTest {
         relation.setId(10);
         relation.setPerson(john);
         relation.setSpouse(jane);
+        relation.setChildren(new HashSet<>());
 
         Relation relationResult = new Relation();
         relationResult.setId(10);
@@ -545,6 +546,7 @@ class RelationServiceTest {
         relation.setId(10);
         relation.setPerson(john);
         relation.setSpouse(jane);
+        relation.setChildren(new HashSet<>());
 
         Relation relationResult = new Relation();
         relationResult.setId(10);
@@ -569,11 +571,13 @@ class RelationServiceTest {
         relation.setId(10);
         relation.setPerson(john);
         relation.setSpouse(null);
+        relation.setChildren(new HashSet<>());
 
         Relation relationResult = new Relation();
         relationResult.setId(10);
         relationResult.setPerson(null);
         relationResult.setSpouse(null);
+
 
         when(relationRepository.findById(anyInt())).thenReturn(Optional.of(relation));
         when(relationRepository.save(any(Relation.class))).thenReturn(relationResult);
