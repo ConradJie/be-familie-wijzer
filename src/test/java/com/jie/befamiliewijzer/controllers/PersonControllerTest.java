@@ -327,14 +327,60 @@ class PersonControllerTest {
     }
 
     @Test
+    void testgGetPersonsInRelationsWithoutSpouses() throws Exception {
+        PersonDto personDto = new PersonDto();
+        personDto.id = 11;
+        personDto.givenNames = "John";
+        personDto.surname = "Doe";
+        personDto.sex = "M";
+        List<PersonDto> dtos = new ArrayList<>();
+        dtos.add(personDto);
+
+        Mockito.when(personService.getPersonsInRelationsWithoutSpouses()).thenReturn(dtos);
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/persons/nospouses"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(11)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].givenNames", is("John")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].surname", is("Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sex", is("M")));
+    }
+
+    @Test
+    void testGetPersonsWithoutRelationsOrChildOf() throws Exception {
+        PersonDto personDto = new PersonDto();
+        personDto.id = 11;
+        personDto.givenNames = "John";
+        personDto.surname = "Doe";
+        personDto.sex = "M";
+        List<PersonDto> dtos = new ArrayList<>();
+        dtos.add(personDto);
+
+        Mockito.when(personService.getPersonsWithoutRelationsOrChildOf()).thenReturn(dtos);
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/persons/solo"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(11)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].givenNames", is("John")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].surname", is("Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sex", is("M")));
+    }
+
+    @Test
     void testCreatePerson() throws Exception {
 
         //PersonInputDto
-        String jsonString = "{\n" +
-                "\"givenNames\": \"John\",\n" +
-                "\"surname\": \"Doe\",\n" +
-                "\"sex\": \"M\"\n" +
-                "}\n";
+        String jsonString = """
+                {
+                "givenNames": "John",
+                "surname": "Doe",
+                "sex": "M"
+                }
+                """;
 
         PersonDto personDto = new PersonDto();
         personDto.id = 11;
@@ -361,11 +407,13 @@ class PersonControllerTest {
     void testUpdatePerson() throws Exception {
 
         //PersonInputDto
-        String jsonString = "{\n" +
-                "\"givenNames\": \"John\",\n" +
-                "\"surname\": \"Doe\",\n" +
-                "\"sex\": \"M\"\n" +
-                "}\n";
+        String jsonString = """
+                {
+                "givenNames": "John",
+                "surname": "Doe",
+                "sex": "M"
+                }
+                """;
 
         PersonDto personDto = new PersonDto();
         personDto.id = 11;

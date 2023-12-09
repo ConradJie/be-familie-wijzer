@@ -2,6 +2,7 @@ package com.jie.befamiliewijzer.controllers;
 
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
+import com.jie.befamiliewijzer.dtos.EventMonthDayDto;
 import com.jie.befamiliewijzer.dtos.EventTypeDto;
 import com.jie.befamiliewijzer.filter.JwtRequestFilter;
 import com.jie.befamiliewijzer.services.CustomUserDetailsService;
@@ -356,6 +357,42 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("3919-12-31T23:00:00.000+00:00")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].relationId", is(60)));
+    }
+
+    @Test
+    void tesGetAllCelebrateEventsOnMonthDay() throws Exception {
+        EventMonthDayDto dto = new EventMonthDayDto();
+        dto.id = 60;
+        dto.eventType = "BIRTH";
+        dto.description = "Birthday";
+        dto.text = "";
+        dto.date = new Date(2020, Calendar.MAY, 1);
+        dto.personId = 11;
+        dto.relationId = null;
+        dto.givenNames = "John";
+        dto.surname = "Doe";
+        dto.spouseGivenNames = "";
+        dto.spouseSurname = "";
+        List<EventMonthDayDto> dtos = new ArrayList<>();
+        dtos.add(dto);
+
+        Mockito.when(eventService.getAllCelebrateEventsOnMonthDay(5, 1)).thenReturn(dtos);
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/events/month/5/day/1"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(60)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].eventType", is("BIRTH")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", is("Birthday")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].text", is("")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date", is("3920-04-30T22:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].givenNames", is("John")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].surname", is("Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseGivenNames", is("")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseSurname", is("")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", is(11)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].relationId", IsNull.nullValue()));
     }
 
     @Test

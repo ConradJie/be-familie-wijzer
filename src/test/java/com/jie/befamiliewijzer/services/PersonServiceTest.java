@@ -290,6 +290,51 @@ class PersonServiceTest {
     }
 
     @Test
+    void testGetPersonsInRelationsWithoutSpouses() {
+        //Arrange
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Relation relation = new Relation();
+        relation.setId(1);
+        relation.setPerson(john);
+        relation.setSpouse(null);
+        List<Relation> relations = new ArrayList<>();
+        relations.add(relation);
+
+        when(relationRepository.findRelationBySpouseIsNull()).thenReturn(relations);
+        when(personRepository.findById(relation.getPerson().getId())).thenReturn(Optional.of(john));
+
+        List<PersonDto> dtos = personService.getPersonsInRelationsWithoutSpouses();
+
+        assertEquals("John", dtos.get(0).givenNames);
+        assertEquals("Doe", dtos.get(0).surname);
+        assertEquals("M", dtos.get(0).sex);
+    }
+
+    @Test
+    void testGetPersonsWithoutRelationsOrChildOf() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+        List<Person> personList = new ArrayList<>();
+        personList.add(john);
+
+        when(personRepository.findAllPersonswithoutRelationsOrChildOf()).thenReturn(personList);
+        List<PersonDto> dtos = personService.getPersonsWithoutRelationsOrChildOf();
+
+        assertEquals("John", dtos.get(0).givenNames);
+        assertEquals("Doe", dtos.get(0).surname);
+        assertEquals("M", dtos.get(0).sex);
+
+    }
+
+    @Test
     void testCreatePerson() {
         PersonInputDto inputDto = new PersonInputDto();
         inputDto.givenNames = "John";

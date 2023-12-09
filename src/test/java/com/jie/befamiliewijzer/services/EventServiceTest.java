@@ -2,13 +2,11 @@ package com.jie.befamiliewijzer.services;
 
 import com.jie.befamiliewijzer.dtos.EventDto;
 import com.jie.befamiliewijzer.dtos.EventInputDto;
+import com.jie.befamiliewijzer.dtos.EventMonthDayDto;
 import com.jie.befamiliewijzer.dtos.EventTypeDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
-import com.jie.befamiliewijzer.models.Event;
-import com.jie.befamiliewijzer.models.Multimedia;
-import com.jie.befamiliewijzer.models.Person;
-import com.jie.befamiliewijzer.models.Relation;
+import com.jie.befamiliewijzer.models.*;
 import com.jie.befamiliewijzer.repositories.EventRepository;
 import com.jie.befamiliewijzer.repositories.PersonRepository;
 import com.jie.befamiliewijzer.repositories.RelationRepository;
@@ -27,6 +25,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -334,7 +333,7 @@ class EventServiceTest {
         relation.setId(60);
         relation.setPerson(john);
         relation.setSpouse(jane);
-        relation.setChildren(null);
+        relation.setChildren(new HashSet<>());
 
         List<Relation> relations = new ArrayList<>();
         relations.add(relation);
@@ -368,6 +367,171 @@ class EventServiceTest {
         assertEquals(date, dto.endDate);
         assertEquals(null, dto.personId);
         assertEquals(60, dto.relationId);
+
+    }
+
+    @Test
+    void testGetAllCelebrateEventsOnMonthDay() {
+        Person john = new Person();
+        john.setId(11);
+        john.setGivenNames("John");
+        john.setSurname("Doe");
+        john.setSex("M");
+
+        Person jane = new Person();
+        jane.setId(12);
+        jane.setGivenNames("Jane");
+        jane.setSurname("Doe");
+        jane.setSex("F");
+
+        Relation relationJohnJane = new Relation();
+        relationJohnJane.setId(60);
+        relationJohnJane.setPerson(john);
+        relationJohnJane.setSpouse(jane);
+        relationJohnJane.setChildren(new HashSet<>());
+        relationJohnJane.setEvents(null);
+
+        Date dateMarriageJohnJane = new Date(2000, Calendar.MAY, 1);
+        Event marriageJohnJane = new Event();
+        marriageJohnJane.setId(21);
+        marriageJohnJane.setEventType("MARRIAGE");
+        marriageJohnJane.setDescription("Wedding");
+        marriageJohnJane.setText("");
+        marriageJohnJane.setBeginDate(dateMarriageJohnJane);
+        marriageJohnJane.setEndDate(dateMarriageJohnJane);
+        marriageJohnJane.setPerson(null);
+        marriageJohnJane.setRelation(relationJohnJane);
+
+        Date dateDivorceJohnJane = new Date(2010, Calendar.NOVEMBER, 1);
+        Event divorce = new Event();
+        divorce.setId(22);
+        divorce.setEventType("DIVORCE");
+        divorce.setDescription("Seperation");
+        divorce.setText("");
+        divorce.setBeginDate(dateDivorceJohnJane);
+        divorce.setEndDate(dateDivorceJohnJane);
+        divorce.setPerson(null);
+        divorce.setRelation(relationJohnJane);
+
+        Date datebirthJohn = new Date(1980, Calendar.MAY, 1);
+        Event birthJohn = new Event();
+        birthJohn.setId(23);
+        birthJohn.setEventType("BIRTH");
+        birthJohn.setDescription("Birthday");
+        birthJohn.setText("");
+        birthJohn.setBeginDate(datebirthJohn);
+        birthJohn.setEndDate(datebirthJohn);
+        birthJohn.setPerson(john);
+        birthJohn.setRelation(null);
+
+        Date dateDeathJohn = new Date(2010, Calendar.APRIL, 1);
+        Event deathJohn = new Event();
+        deathJohn.setId(24);
+        deathJohn.setEventType("BIRTH");
+        deathJohn.setDescription("Birthday");
+        deathJohn.setText("");
+        deathJohn.setBeginDate(dateDeathJohn);
+        deathJohn.setEndDate(dateDeathJohn);
+        deathJohn.setPerson(john);
+        deathJohn.setRelation(null);
+
+        Person frank = new Person();
+        frank.setId(13);
+        frank.setGivenNames("Frank");
+        frank.setSurname("Foe");
+        frank.setSex("M");
+
+        Date dateBirthFrank = new Date(1981, Calendar.MAY, 1);
+        Event birthFrank = new Event();
+        birthFrank.setId(23);
+        birthFrank.setEventType("BIRTH");
+        birthFrank.setDescription("Birthday");
+        birthFrank.setText("");
+        birthFrank.setBeginDate(dateBirthFrank);
+        birthFrank.setEndDate(dateBirthFrank);
+        birthFrank.setPerson(frank);
+        birthFrank.setRelation(null);
+
+        Relation relationFankJane = new Relation();
+        relationFankJane.setId(61);
+        relationFankJane.setPerson(frank);
+        relationFankJane.setSpouse(jane);
+        relationFankJane.setChildren(new HashSet<>());
+        relationFankJane.setEvents(null);
+
+        Date dateMarriageFrankJane = new Date(2004, Calendar.MAY, 1);
+        Event marriageFrankJane = new Event();
+        marriageFrankJane.setId(24);
+        marriageFrankJane.setEventType("MARRIAGE");
+        marriageFrankJane.setDescription("Wedding");
+        marriageFrankJane.setText("Frank - Jane");
+        marriageFrankJane.setBeginDate(dateMarriageFrankJane);
+        marriageFrankJane.setEndDate(dateMarriageFrankJane);
+        marriageFrankJane.setPerson(null);
+        marriageFrankJane.setRelation(relationFankJane);
+
+        EventMonthDayDto wedding = new EventMonthDayDto();
+        wedding.id = 61;
+        wedding.eventType = "MARRIAGE";
+        wedding.description = "Wedding";
+        wedding.text = "Frank - Jane";
+        wedding.date = dateMarriageFrankJane;
+        wedding.personId = 13;
+        wedding.relationId = 61;
+        wedding.givenNames = "Frank";
+        wedding.surname = "Foe";
+        wedding.spouseGivenNames = "Jane";
+        wedding.spouseSurname = "Doe";
+
+        EventMonthDayDto birthdayFrank = new EventMonthDayDto();
+        birthdayFrank.id = 21;
+        birthdayFrank.eventType = "BIRTH";
+        birthdayFrank.description = "Birthday";
+        birthdayFrank.text = "";
+        birthdayFrank.date = dateBirthFrank;
+        birthdayFrank.personId = 13;
+        birthdayFrank.relationId = null;
+        birthdayFrank.givenNames = "Frank";
+        birthdayFrank.surname = "Foe";
+        birthdayFrank.spouseGivenNames = "";
+        birthdayFrank.spouseSurname = "";
+
+        List<EventMonthDayDto> list = new ArrayList<>();
+        list.add(wedding);
+        list.add(birthdayFrank);
+
+        List<Event> events = new ArrayList<>();
+        events.add(marriageJohnJane);
+        events.add(birthJohn);
+        events.add(birthFrank);
+        events.add(marriageFrankJane);
+        when(eventRepository.findAllEventsOnMonthDay(anyInt(), anyInt())).thenReturn(events);
+        when(eventRepository.findEventByRelationIdAndEventType(60,"DIVORCE")).thenReturn(Optional.of(divorce));
+        when(eventRepository.findByPersonIdAndEventType(11,"DEATH")).thenReturn(Optional.of(deathJohn));
+        when(relationRepository.findById(61)).thenReturn(Optional.of(relationFankJane));
+        when(personRepository.findById(13)).thenReturn(Optional.of(frank));
+        when(personRepository.findById(12)).thenReturn(Optional.of(jane));
+
+        List<EventMonthDayDto>  dtos = eventService.getAllCelebrateEventsOnMonthDay(5, 1);
+        EventMonthDayDto dto0 = dtos.get(0);
+        EventMonthDayDto dto1 = dtos.get(1);
+
+        assertEquals(23, dto0.id);
+        assertEquals("BIRTH", dto0.eventType);
+        assertEquals("Birthday", dto0.description);
+        assertEquals("", dto0.text);
+        assertEquals(13, dto0.personId);
+        assertEquals("Frank", dto0.givenNames);
+        assertEquals("Foe", dto0.surname);
+
+        assertEquals(24, dto1.id);
+        assertEquals("MARRIAGE", dto1.eventType);
+        assertEquals("Wedding", dto1.description);
+        assertEquals(61, dto1.relationId);
+        assertEquals("Frank", dto1.givenNames);
+        assertEquals("Foe", dto1.surname);
+        assertEquals("Jane", dto1.spouseGivenNames);
+        assertEquals("Doe", dto1.spouseSurname);
 
     }
 
@@ -822,7 +986,7 @@ class EventServiceTest {
             EventDto dto = eventService.createEventFromPerson(11, inputDto);
         });
 
-        Assertions.assertEquals("The date of death occurrs before previous events", thrown.getMessage());
+        Assertions.assertEquals("The date of death occurs before previous events", thrown.getMessage());
 
     }
 
@@ -868,7 +1032,7 @@ class EventServiceTest {
             EventDto dto = eventService.createEventFromPerson(11, inputDto);
         });
 
-        Assertions.assertEquals("The event occurrs after the date of death", thrown.getMessage());
+        Assertions.assertEquals("The event occurs after the date of death", thrown.getMessage());
 
     }
 
@@ -915,7 +1079,7 @@ class EventServiceTest {
             EventDto dto = eventService.createEventFromPerson(11, inputDto);
         });
 
-        Assertions.assertEquals("The date of birth occurrs after previous events", thrown.getMessage());
+        Assertions.assertEquals("The date of birth occurs after previous events", thrown.getMessage());
 
     }
 
@@ -939,7 +1103,7 @@ class EventServiceTest {
         relation.setId(60);
         relation.setPerson(john);
         relation.setSpouse(jane);
-        relation.setChildren(null);
+        relation.setChildren(new HashSet<Child>());
         relation.setEvents(null);
 
         Event event = new Event();

@@ -96,14 +96,16 @@ public class EventService {
         for (Event event : events) {
             if (event.getEventType().equals("MARRIAGE")) {
                 Optional<Event> divorce = eventRepository.
-                        findEventByRelationIdAndEventType(event.getRelation().getId(),"DIVORCE");
+                        findEventByRelationIdAndEventType(event.getRelation().getId(), "DIVORCE");
                 if (divorce.isPresent()) {
-                    continue;                }
+                    continue;
+                }
             } else if (event.getEventType().equals("BIRTH")) {
                 Optional<Event> death = eventRepository.
-                        findByPersonIdAndEventType(event.getPerson().getId(),"DEATH");
+                        findByPersonIdAndEventType(event.getPerson().getId(), "DEATH");
                 if (death.isPresent()) {
-                    continue;                }
+                    continue;
+                }
             } else {
                 continue;
             }
@@ -117,6 +119,7 @@ public class EventService {
                 Optional<Person> personOptional = personRepository.findById(event.getPerson().getId());
                 if (personOptional.isPresent()) {
                     Person person = personOptional.get();
+                    dto.personId = person.getId();
                     dto.givenNames = person.getGivenNames();
                     dto.surname = person.getSurname();
                 }
@@ -124,6 +127,7 @@ public class EventService {
                 Optional<Relation> relationOptional = relationRepository.findById(event.getRelation().getId());
                 if (relationOptional.isPresent()) {
                     Relation relation = relationOptional.get();
+                    dto.relationId = relation.getId();
                     Optional<Person> personOptional = personRepository.findById(relation.getPerson().getId());
                     if (personOptional.isPresent()) {
                         Person person = personOptional.get();

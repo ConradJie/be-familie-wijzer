@@ -66,31 +66,31 @@ class RelationControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.spouseId", is(12)));
     }
 
-//    @Test
-//    void testGetRelationsFromPerson() {
-//        RelationSpouseDto dto = new RelationSpouseDto();
-//        dto.id = 10;
-//        dto.personId = 11;
-//        dto.spouseId = 12;
-//        dto.spouseGivenNames = "Jane";
-//        dto.spouseSurname = "Doe";
-//        dto.spouseSex = "F";
-//        List<RelationSpouseDto> dtos = new ArrayList<>();
-//        dtos.add(dto);
-//
-//        Mockito.when(relationService.getAllRelationsFromPersonId(anyInt())).thenReturn(dtos);
-//
-//        this.mockMvc
-//                .perform(MockMvcRequestBuilders.get("/relations/persons/11"))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(10)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", is(11)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseId", is(12)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseGivenNames", is("Jane")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseSurname", is("Doe")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseSex", is("F")));
-//    }
+    @Test
+    void testGetRelationsFromPerson() throws Exception {
+        RelationSpouseDto dto = new RelationSpouseDto();
+        dto.id = 10;
+        dto.personId = 11;
+        dto.spouseId = 12;
+        dto.spouseGivenNames = "Jane";
+        dto.spouseSurname = "Doe";
+        dto.spouseSex = "F";
+        List<RelationSpouseDto> dtos = new ArrayList<>();
+        dtos.add(dto);
+
+        Mockito.when(relationService.getAllRelationsFromPersonId(anyInt())).thenReturn(dtos);
+
+        this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/relations/persons/11"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", is(11)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseId", is(12)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseGivenNames", is("Jane")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseSurname", is("Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseSex", is("F")));
+    }
 
     @Test
     void testGetRelationByPersonIdAndSpouseId() throws Exception {
