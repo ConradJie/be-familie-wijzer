@@ -93,23 +93,6 @@ class RelationControllerTest {
     }
 
     @Test
-    void testGetRelationByPersonIdAndSpouseId() throws Exception {
-        RelationDto dto = new RelationDto();
-        dto.id = 10;
-        dto.personId = 11;
-        dto.spouseId = 12;
-
-        Mockito.when(relationService.getRelationByPersonIdAndSpouseId(anyInt(), anyInt())).thenReturn(dto);
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.get("/relations/persons/11/120"))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", is(10)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.personId", is(11)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.spouseId", is(12)));
-    }
-
-    @Test
     void testGetAllRelations() throws Exception {
         RelationDto dto0 = new RelationDto();
         dto0.id = 10;
@@ -216,17 +199,6 @@ class RelationControllerTest {
 
         this.mockMvc
                 .perform(MockMvcRequestBuilders.delete("/relations/10/12"))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-    }
-
-    @Test
-    void testDeleteRelationByPersonIdAndSpouseId() throws Exception {
-
-        relationService.deleteRelationByPersonIdAndSpouseId(anyInt(), anyInt());
-
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.delete("/relations/persons/11/12"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }

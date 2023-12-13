@@ -39,13 +39,6 @@ public class ChildController {
         return ResponseEntity.created(uri).body(childDto);
     }
 
-    @PostMapping("/relations/{relationId}/children/{id}")
-    public ResponseEntity<Object> updateChildFromRelation(@PathVariable Integer relationId, @PathVariable Integer id,
-                                                          @Valid @RequestBody ChildInputDto childInputDto) {
-        ChildDto dto = childService.updateChildFromRelastion(relationId, id, childInputDto);
-        return ResponseEntity.ok(dto);
-    }
-
     @DeleteMapping("/relations/{relationId}/children/{id}")
     public ResponseEntity<ChildDto> deleteChildFromRelation(@PathVariable Integer relationId, @PathVariable Integer id) {
         childService.deleteChildFromRelation(relationId, id);

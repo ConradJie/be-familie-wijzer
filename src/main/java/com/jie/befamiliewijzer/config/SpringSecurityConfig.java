@@ -64,6 +64,7 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.GET,"/users").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
+                                        .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                                         /*TODO voeg de requestmatchers toe voor admin(post en delete) en user (overige)*/
                                         .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("ADMIN","USER")
@@ -93,7 +94,6 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/multimedias/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.PUT, "/events/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.GET, "/events/**").hasAnyRole("ADMIN","USER")
-                                        .requestMatchers(HttpMethod.GET, "/multimedias/**").hasAnyRole("ADMIN","USER")
                                         .requestMatchers(HttpMethod.DELETE, "/events/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.GET, "/descendants/*").hasAnyRole("ADMIN","USER")
 
