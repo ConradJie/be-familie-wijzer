@@ -28,11 +28,6 @@ public class MultimediaController {
         this.mediaService = mediaService;
     }
 
-    @GetMapping("/multimedias/{id}")
-    public ResponseEntity<MultimediaDto> getMultimedia(@PathVariable Integer id) {
-        return ResponseEntity.ok(multimediaService.getMultimedia(id));
-    }
-
     @GetMapping("/events/{eventId}/multimedias/{id}")
     public ResponseEntity<MultimediaDto> getMultimedia(@PathVariable Integer eventId, @PathVariable Integer id) {
         return ResponseEntity.ok(multimediaService.getMultimediaFromEvent(eventId, id));
@@ -46,15 +41,6 @@ public class MultimediaController {
     @GetMapping("/events/{eventId}/multimediablobs")
     public ResponseEntity<List<MultimediaBlobDto>> getAllMultimediaBlobsFromEvent(@PathVariable Integer eventId) {
         return ResponseEntity.ok(multimediaService.getAllMultimediaBlobsFromEvent(eventId));
-    }
-
-    @PostMapping("/multimedias")
-    public ResponseEntity<Object> createMultimedia(@Valid @RequestBody MultimediaInputDto multimediaInputDto) {
-        MultimediaDto multimediaDto = multimediaService.createMultimedia(multimediaInputDto);
-        URI uri = URI.create(ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/" + multimediaDto.id).toUriString());
-        return ResponseEntity.created(uri).body(multimediaDto);
     }
 
     @GetMapping("/persons/multimedias/nomedia")

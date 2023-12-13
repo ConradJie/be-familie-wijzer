@@ -84,7 +84,7 @@ public class RelationService {
                 single = true;
             }
             if (single) {
-                //If single then create a anonymous spouse
+                //If single then create an anonymous spouse
                 RelationSpouseDto relationSpouseDto = new RelationSpouseDto();
                 relationSpouseDto.id = relation.getId();
                 relationSpouseDto.personId = personId;
@@ -150,17 +150,20 @@ public class RelationService {
     public void deleteRelation(Integer id) {
         if (relationRepository.existsById(id)) {
             //Detach person, spouse and children from relation before deleting relation
-            Relation relation = relationRepository.findById(id).get();
-            relation.setPerson(null);
-            relation.setSpouse(null);
-            if (relation.getChildren() != null) {
-                for (Child child : relation.getChildren()) {
-                    child.setPerson(null);
-                    child = childRepository.save(child);
+            Optional<Relation> relationOptional = relationRepository.findById(id);
+            if (relationOptional.isPresent()) {
+                Relation relation = relationOptional.get();
+                relation.setPerson(null);
+                relation.setSpouse(null);
+                if (relation.getChildren() != null) {
+                    for (Child child : relation.getChildren()) {
+                        child.setPerson(null);
+                        childRepository.save(child);
+                    }
                 }
+                relationRepository.save(relation);
+                relationRepository.deleteById(id);
             }
-            relation = relationRepository.save(relation);
-            relationRepository.deleteById(id);
         }
     }
 
@@ -185,17 +188,6 @@ public class RelationService {
         if (relation.getPerson() == null && relation.getSpouse() == null) {
             deleteRelation(relationId);
         }
-    }
-
-    public void deleteRelationByPersonIdAndSpouseId(Integer personId, Integer spouseId) {
-        Optional<Relation> relationOptional = relationRepository.findByPersonIdAndSpouseId(personId, spouseId);
-        if (relationOptional.isEmpty()) {
-            relationOptional = relationRepository.findByPersonIdAndSpouseId(spouseId, personId);
-            if (relationOptional.isEmpty()) {
-                throw new ResourceNotFoundException("The requested relation could not be found");
-            }
-        }
-        deleteRelation(relationOptional.get().getId());
     }
 
     private RelationDto transfer(Relation relation) {

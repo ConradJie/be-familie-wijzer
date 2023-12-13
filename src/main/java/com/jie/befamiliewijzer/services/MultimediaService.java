@@ -40,13 +40,6 @@ public class MultimediaService {
         this.personRepository = personRepository;
     }
 
-    public MultimediaDto getMultimedia(Integer id) {
-        Multimedia multimedia = multimediaRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("The requested multimedia could not be found"));
-        return transfer(multimedia);
-    }
-
     public MultimediaDto getMultimediaFromEvent(Integer eventId, Integer id) {
         if (!eventRepository.existsById(eventId)) {
             throw new ResourceNotFoundException("The requested event could not be found");
@@ -124,15 +117,6 @@ public class MultimediaService {
             }
         }
         return dtos;
-    }
-
-    public MultimediaDto createMultimedia(MultimediaInputDto dto) {
-        if (!eventRepository.existsById(dto.eventId)) {
-            throw new ResourceNotFoundException("The requested event could not be found");
-        }
-        Multimedia multimedia = transfer(dto);
-        multimediaRepository.save(multimedia);
-        return transfer(multimedia);
     }
 
     public MultimediaDto createMultimediaFromEvent(Integer eventId, MultimediaInputDto dto) {

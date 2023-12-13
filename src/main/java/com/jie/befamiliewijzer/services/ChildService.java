@@ -6,7 +6,6 @@ import com.jie.befamiliewijzer.dtos.ChildPersonDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import com.jie.befamiliewijzer.models.Child;
-import com.jie.befamiliewijzer.models.Event;
 import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.models.Relation;
 import com.jie.befamiliewijzer.repositories.ChildRepository;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,7 +34,7 @@ public class ChildService {
         Child child = childRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested child could not be found"));
-        if (child.getRelation().getId() != relationId) {
+        if (!Objects.equals(child.getRelation().getId(), relationId)) {
             throw new ResourceNotFoundException("The requested relation could not be found");
         }
         return transfer(child);
@@ -62,14 +62,14 @@ public class ChildService {
 
 
     public ChildDto createChildFromRelation(Integer relationId, ChildInputDto dto) {
-        if (relationId != dto.relationId) {
+        if (!Objects.equals(relationId, dto.relationId)) {
             throw new ResourceNotFoundException("The requested relation could not be found");
         }
         Relation relation = relationRepository
                 .findById(relationId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
-        if (relation.getPerson().getId() == dto.personId
-                || (relation.getSpouse() != null && relation.getSpouse().getId() == dto.personId)) {
+        if (Objects.equals(relation.getPerson().getId(), dto.personId)
+                || (relation.getSpouse() != null && Objects.equals(relation.getSpouse().getId(), dto.personId))) {
             throw new UnprocessableEntityException("Parent and child are the same person");
         }
         if (childRepository.existsByRelation_IdAndPersonId(relationId, dto.personId)) {
@@ -80,35 +80,18 @@ public class ChildService {
         return transfer(child);
     }
 
-
-    public ChildDto updateChildFromRelastion(Integer relationId, Integer id, ChildInputDto dto) {
-        if (relationId != dto.relationId || !relationRepository.existsById(relationId)) {
-            throw new ResourceNotFoundException("The requested relation could not be found");
-        }
-        Child child = childRepository
-                .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("The requested child could not be found"));
-        if (dto.personId != null) {
-            Person person = personRepository
-                    .findById(dto.personId)
-                    .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
-            child.setPerson(person);
-        } else {
-            child.setPerson(null);
-        }
-        childRepository.save(child);
-        return transfer(child);
-    }
-
     public void deleteChildFromRelation(Integer relationId, Integer id) {
         if (childRepository.existsById(id)) {
-            Child child = childRepository.findById(id).get();
-            if (relationId == child.getRelation().getId()) {
-                //Detach person and relation from child before deleting relation
-                child.setPerson(null);
-                child.setRelation(null);
-                childRepository.save(child);
-                childRepository.deleteById(id);
+            Optional<Child> childOptional = childRepository.findById(id);
+            if (childOptional.isPresent()) {
+                Child child = childOptional.get();
+                if (Objects.equals(relationId, child.getRelation().getId())) {
+                    //Detach person and relation from child before deleting relation
+                    child.setPerson(null);
+                    child.setRelation(null);
+                    childRepository.save(child);
+                    childRepository.deleteById(id);
+                }
             }
         }
     }
@@ -137,13 +120,4 @@ public class ChildService {
         }
         return child;
     }
-
-    private List<ChildDto> transfer(List<Child> children) {
-        List<ChildDto> dtos = new ArrayList<>();
-        for (Child child : children) {
-            dtos.add(transfer(child));
-        }
-        return dtos;
-    }
-
 }

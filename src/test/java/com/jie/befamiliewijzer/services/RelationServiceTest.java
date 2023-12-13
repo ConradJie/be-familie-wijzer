@@ -583,55 +583,9 @@ class RelationServiceTest {
         when(relationRepository.save(any(Relation.class))).thenReturn(relationResult);
 
         when(relationRepository.existsById(anyInt())).thenReturn(true);
-//        when(relationRepository.findById(anyInt())).thenReturn(Optional.of(relationResult));
 
         relationService.removePersonFromRelation(10, 11);
         Mockito.verify(relationRepository, times(1)).deleteById(anyInt());
-    }
-
-    @Test
-    void testDeleteRelationByPersonIdAndSpouseId() {
-        Person john = new Person();
-        john.setId(11);
-        john.setGivenNames("John");
-        john.setSurname("Doe");
-        john.setSex("M");
-
-        Person jane = new Person();
-        jane.setId(12);
-        jane.setGivenNames("Jane");
-        jane.setSurname("Doe");
-        jane.setSex("F");
-
-        Relation relation = new Relation();
-        relation.setId(10);
-        relation.setPerson(john);
-        relation.setSpouse(jane);
-
-        Relation relationResult = new Relation();
-        relationResult.setId(10);
-        relation.setPerson(null);
-        relation.setSpouse(null);
-
-        when(relationRepository.findByPersonIdAndSpouseId(11, 12)).thenReturn(Optional.of(relation));
-        when(relationRepository.findById(10)).thenReturn(Optional.of(relation));
-        when(relationRepository.save(any(Relation.class))).thenReturn(relationResult);
-        when(relationRepository.existsById(anyInt())).thenReturn(true);
-
-        relationService.deleteRelationByPersonIdAndSpouseId(11, 12);
-
-        Mockito.verify(relationRepository, times(1)).deleteById(anyInt());
-    }
-
-    @Test
-    void testDeleteRelationByPersonIdAndSpouseIdSwitch() {
-        when(relationRepository.findByPersonIdAndSpouseId(12, 11)).thenReturn(Optional.empty());
-        when(relationRepository.findByPersonIdAndSpouseId(11, 12)).thenReturn(Optional.empty());
-
-        ResourceNotFoundException thrown = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            relationService.deleteRelationByPersonIdAndSpouseId(11, 12);
-        });
-        Assertions.assertEquals("The requested relation could not be found", thrown.getMessage());
     }
 
 }
