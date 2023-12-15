@@ -1,7 +1,6 @@
 package com.jie.befamiliewijzer.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.jie.befamiliewijzer.exceptions.UnprocessableEntityException;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -68,6 +67,23 @@ public class Event {
 
     public List<Multimedia> getMultimedias() {
         return multimedias;
+    }
+
+    public String getDateText() {
+        String[] monthText = {
+                "Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        };
+        Calendar calendarBegin = Calendar.getInstance();
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarBegin.setTime(this.beginDate);
+        calendarEnd.setTime(this.endDate);
+        return String.format("%s %s %s",
+                calendarBegin.get(Calendar.DAY_OF_MONTH) == calendarEnd.get(Calendar.DAY_OF_MONTH) ?
+                        calendarBegin.get(Calendar.DAY_OF_MONTH) : "",
+                calendarBegin.get(Calendar.MONTH) == calendarEnd.get(Calendar.MONTH) ?
+                        monthText[calendarBegin.get(Calendar.MONTH)] : "",
+                calendarBegin.get(Calendar.YEAR) == calendarEnd.get(Calendar.YEAR) ?
+                        calendarBegin.get(Calendar.YEAR) : "").trim();
     }
 
     public void setId(Integer id) {
