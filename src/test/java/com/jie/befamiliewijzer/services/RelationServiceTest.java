@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,7 +53,7 @@ class RelationServiceTest {
     RelationService relationService;
 
     @Test
-    void testgetRelation() {
+    void testGetRelation() {
         Person john = new Person();
         john.setId(11);
         john.setGivenNames("John");
@@ -70,13 +71,14 @@ class RelationServiceTest {
         Set<Child> kids = new HashSet<>();
         kids.add(johnny);
 
+        LocalDate dateMarriage = LocalDate.of(2020, 1, 1);
         Event marriage = new Event();
         marriage.setId(10);
         marriage.setEventType("MARRIAGE");
         marriage.setDescription("Wedding");
         marriage.setText("..");
-        marriage.setBeginDate(new Date(2020, Calendar.JANUARY, 1));
-        marriage.setEndDate(new Date(2020, Calendar.JANUARY, 1));
+        marriage.setBeginDate(dateMarriage);
+        marriage.setEndDate(dateMarriage);
         List<Event> happenings = new ArrayList<>();
         happenings.add(marriage);
 
@@ -471,13 +473,14 @@ class RelationServiceTest {
         kids.add(kid);
 
         List<Event> eventList = new ArrayList<>();
+        LocalDate dateMarriage = LocalDate.of(2023, 1, 1);
         Event marriage = new Event();
         marriage.setId(20);
         marriage.setEventType("MARRIAGE");
         marriage.setDescription("Wedding");
         marriage.setText("..");
-        marriage.setBeginDate(new Date(2023, Calendar.JANUARY, 1));
-        marriage.setEndDate(new Date(2023, Calendar.JANUARY, 1));
+        marriage.setBeginDate(dateMarriage);
+        marriage.setEndDate(dateMarriage);
 
         Relation relation = new Relation();
         relation.setId(10);

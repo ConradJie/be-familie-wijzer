@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.jie.befamiliewijzer.models.Event.*;
@@ -34,8 +35,8 @@ class EventTest {
         List<Multimedia> testMediaList = new ArrayList<>();
         testMediaList.add(testMedia);
 
-        Date begin = new Date(2023, 5, 1);
-        Date end = new Date(2023, 5, 1);
+        LocalDate begin = LocalDate.of(2023, 5, 1);
+        LocalDate end = LocalDate.of(2023, 5, 1);
         Event event = new Event();
         event.setId(10);
         event.setEventType("OTHERS");
@@ -53,8 +54,8 @@ class EventTest {
         String eventType = event.getEventType();
         String description = event.getDescription();
         String text = event.getText();
-        Date beginDate = event.getBeginDate();
-        Date endDate = event.getEndDate();
+        LocalDate beginDate = event.getBeginDate();
+        LocalDate endDate = event.getEndDate();
         Person person = event.getPerson();
         Relation relation = event.getRelation();
         List<Multimedia> multimediaList = event.getMultimedias();
@@ -68,7 +69,7 @@ class EventTest {
         assertEquals(begin, beginDate);
         assertEquals(end, endDate);
         assertEquals(john, person);
-        assertEquals(null, relation);
+        assertNull(relation);
         assertEquals(testMediaList, multimediaList);
         assertEquals(eventTypes, personEventTypes);
     }

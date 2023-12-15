@@ -1,5 +1,6 @@
 package com.jie.befamiliewijzer.dtos;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class EventDto {
@@ -7,8 +8,8 @@ public class EventDto {
     public String eventType;
     public String description;
     public String text;
-    public Date beginDate;
-    public Date endDate;
+    public LocalDate beginDate;
+    public LocalDate endDate;
     public String dateText;
     public Integer personId;
     public Integer relationId;

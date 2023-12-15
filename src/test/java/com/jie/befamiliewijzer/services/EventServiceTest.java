@@ -20,10 +20,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
@@ -97,7 +97,7 @@ class EventServiceTest {
         List<Multimedia> multimediaList = new ArrayList<>();
         multimediaList.add(multimedia);
 
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -127,7 +127,7 @@ class EventServiceTest {
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
         assertEquals(11, dto.personId);
-        assertEquals(null, dto.relationId);
+        assertNull(dto.relationId);
     }
 
     @Test
@@ -139,7 +139,7 @@ class EventServiceTest {
         List<Multimedia> multimediaList = new ArrayList<>();
         multimediaList.add(multimedia);
 
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -181,7 +181,7 @@ class EventServiceTest {
         assertEquals("Testing", dto.text);
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
-        assertEquals(null, dto.personId);
+        assertNull(dto.personId);
         assertEquals(60, dto.relationId);
     }
 
@@ -193,7 +193,7 @@ class EventServiceTest {
         john.setSurname("Doe");
         john.setSex("M");
 
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Event test = new Event();
         test.setId(30);
@@ -222,7 +222,7 @@ class EventServiceTest {
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
         assertEquals(11, dto.personId);
-        assertEquals(null, dto.relationId);
+        assertNull(dto.relationId);
     }
 
     @Test
@@ -246,7 +246,7 @@ class EventServiceTest {
         List<Multimedia> multimediaList = new ArrayList<>();
         multimediaList.add(multimedia);
 
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -297,7 +297,7 @@ class EventServiceTest {
         assertEquals("Testing", dto.text);
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
-        assertEquals(null, dto.personId);
+        assertNull(dto.personId);
         assertEquals(60, dto.relationId);
     }
 
@@ -315,7 +315,7 @@ class EventServiceTest {
 
     @Test
     void testGetAllEventsFromRelation() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -365,7 +365,7 @@ class EventServiceTest {
         assertEquals("Testing", dto.text);
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
-        assertEquals(null, dto.personId);
+        assertNull(dto.personId);
         assertEquals(60, dto.relationId);
 
     }
@@ -391,7 +391,7 @@ class EventServiceTest {
         relationJohnJane.setChildren(new HashSet<>());
         relationJohnJane.setEvents(null);
 
-        Date dateMarriageJohnJane = new Date(2000, Calendar.MAY, 1);
+        LocalDate dateMarriageJohnJane = LocalDate.of(2000, 5, 1);
         Event marriageJohnJane = new Event();
         marriageJohnJane.setId(21);
         marriageJohnJane.setEventType("MARRIAGE");
@@ -402,7 +402,7 @@ class EventServiceTest {
         marriageJohnJane.setPerson(null);
         marriageJohnJane.setRelation(relationJohnJane);
 
-        Date dateDivorceJohnJane = new Date(2010, Calendar.NOVEMBER, 1);
+        LocalDate dateDivorceJohnJane = LocalDate.of(2010, 11, 1);
         Event divorce = new Event();
         divorce.setId(22);
         divorce.setEventType("DIVORCE");
@@ -413,7 +413,7 @@ class EventServiceTest {
         divorce.setPerson(null);
         divorce.setRelation(relationJohnJane);
 
-        Date datebirthJohn = new Date(1980, Calendar.MAY, 1);
+        LocalDate datebirthJohn = LocalDate.of(1980, 5, 1);
         Event birthJohn = new Event();
         birthJohn.setId(23);
         birthJohn.setEventType("BIRTH");
@@ -424,7 +424,7 @@ class EventServiceTest {
         birthJohn.setPerson(john);
         birthJohn.setRelation(null);
 
-        Date dateDeathJohn = new Date(2010, Calendar.APRIL, 1);
+        LocalDate dateDeathJohn = LocalDate.of(2010, 4, 1);
         Event deathJohn = new Event();
         deathJohn.setId(24);
         deathJohn.setEventType("BIRTH");
@@ -441,7 +441,7 @@ class EventServiceTest {
         frank.setSurname("Foe");
         frank.setSex("M");
 
-        Date dateBirthFrank = new Date(1981, Calendar.MAY, 1);
+        LocalDate dateBirthFrank = LocalDate.of(1981, 5, 1);
         Event birthFrank = new Event();
         birthFrank.setId(23);
         birthFrank.setEventType("BIRTH");
@@ -459,7 +459,7 @@ class EventServiceTest {
         relationFankJane.setChildren(new HashSet<>());
         relationFankJane.setEvents(null);
 
-        Date dateMarriageFrankJane = new Date(2004, Calendar.MAY, 1);
+        LocalDate dateMarriageFrankJane = LocalDate.of(2004, 5, 1);
         Event marriageFrankJane = new Event();
         marriageFrankJane.setId(24);
         marriageFrankJane.setEventType("MARRIAGE");
@@ -506,13 +506,13 @@ class EventServiceTest {
         events.add(birthFrank);
         events.add(marriageFrankJane);
         when(eventRepository.findAllEventsOnMonthDay(anyInt(), anyInt())).thenReturn(events);
-        when(eventRepository.findEventByRelationIdAndEventType(60,"DIVORCE")).thenReturn(Optional.of(divorce));
-        when(eventRepository.findByPersonIdAndEventType(11,"DEATH")).thenReturn(Optional.of(deathJohn));
+        when(eventRepository.findEventByRelationIdAndEventType(60, "DIVORCE")).thenReturn(Optional.of(divorce));
+        when(eventRepository.findByPersonIdAndEventType(11, "DEATH")).thenReturn(Optional.of(deathJohn));
         when(relationRepository.findById(61)).thenReturn(Optional.of(relationFankJane));
         when(personRepository.findById(13)).thenReturn(Optional.of(frank));
         when(personRepository.findById(12)).thenReturn(Optional.of(jane));
 
-        List<EventMonthDayDto>  dtos = eventService.getAllCelebrateEventsOnMonthDay(5, 1);
+        List<EventMonthDayDto> dtos = eventService.getAllCelebrateEventsOnMonthDay(5, 1);
         EventMonthDayDto dto0 = dtos.get(0);
         EventMonthDayDto dto1 = dtos.get(1);
 
@@ -555,7 +555,7 @@ class EventServiceTest {
         john.setSurname("Doe");
         john.setSex("M");
 
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Event event = new Event();
         event.setId(30);
@@ -588,12 +588,12 @@ class EventServiceTest {
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
         assertEquals(11, dto.personId);
-        assertEquals(null, dto.relationId);
+        assertNull(dto.relationId);
     }
 
     @Test
     void testCreateEventFromRelation() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -645,14 +645,14 @@ class EventServiceTest {
         assertEquals("Testing", dto.text);
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
-        assertEquals(null, dto.personId);
+        assertNull(dto.personId);
         assertEquals(60, dto.relationId);
 
     }
 
     @Test
     void testCreateEventFromRelationInvalidEventType() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -694,7 +694,7 @@ class EventServiceTest {
 
     @Test
     void testUpdateEventFromPerson() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -746,7 +746,7 @@ class EventServiceTest {
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
         assertEquals(11, dto.personId);
-        assertEquals(null, dto.relationId);
+        assertNull(dto.relationId);
 
     }
 
@@ -758,7 +758,7 @@ class EventServiceTest {
         john.setSurname("Doe");
         john.setSex("M");
 
-        Date dateOfDeath = new Date(1999, Calendar.JANUARY, 1);
+        LocalDate dateOfDeath = LocalDate.of(1999, 1, 1);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "WRONG";
         inputDto.description = "Before";
@@ -787,8 +787,8 @@ class EventServiceTest {
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "BIRTH";
         inputDto.description = "Before";
-        inputDto.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        inputDto.endDate = new Date(1999, Calendar.JANUARY, 1);
+        inputDto.beginDate = LocalDate.of(2000, 1, 1);
+        inputDto.endDate = LocalDate.of(1999, 1, 1);
         inputDto.personId = 11;
 
         when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
@@ -813,15 +813,15 @@ class EventServiceTest {
         birth.setId(30);
         birth.setEventType("BIRTH");
         birth.setDescription("Birthday");
-        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setBeginDate(LocalDate.of(2000, 1, 1));
+        birth.setEndDate(LocalDate.of(2000, 1, 1));
         birth.setPerson(john);
 
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "BIRTH";
         inputDto.description = "Before";
-        inputDto.beginDate = new Date(1999, Calendar.DECEMBER, 1);
-        inputDto.endDate = new Date(1999, Calendar.DECEMBER, 1);
+        inputDto.beginDate = LocalDate.of(1999, 12, 1);
+        inputDto.endDate = LocalDate.of(1999, 12, 1);
         inputDto.personId = 11;
 
         when(personRepository.findById(anyInt())).thenReturn(Optional.of(john));
@@ -847,19 +847,19 @@ class EventServiceTest {
         birth.setId(30);
         birth.setEventType("BIRTH");
         birth.setDescription("Birthday");
-        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setBeginDate(LocalDate.of(2000, 1, 1));
+        birth.setEndDate(LocalDate.of(2000, 1, 1));
         birth.setPerson(john);
 
         Event death = new Event();
         death.setId(31);
         death.setEventType("DEATH");
         death.setDescription("Date of Death");
-        death.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
-        death.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setBeginDate(LocalDate.of(2020, 12, 1));
+        death.setEndDate(LocalDate.of(2020, 12, 1));
         death.setPerson(john);
 
-        Date newDate = new Date(2020, Calendar.NOVEMBER, 30);
+        LocalDate newDate = LocalDate.of(2020, 11, 30);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "DEATH";
         inputDto.description = "Date of Death";
@@ -891,7 +891,7 @@ class EventServiceTest {
         assertEquals(newDate, dto.beginDate);
         assertEquals(newDate, dto.endDate);
         assertEquals(11, dto.personId);
-        assertEquals(null, dto.relationId);
+        assertNull(dto.relationId);
 
     }
 
@@ -908,19 +908,19 @@ class EventServiceTest {
         birth.setId(30);
         birth.setEventType("BIRTH");
         birth.setDescription("Birthday");
-        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setBeginDate(LocalDate.of(2000, 1, 1));
+        birth.setEndDate(LocalDate.of(2000, 1, 1));
         birth.setPerson(john);
 
         Event death = new Event();
         death.setId(31);
         death.setEventType("DEATH");
         death.setDescription("Date of Death");
-        death.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
-        death.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        death.setBeginDate(LocalDate.of(2020, 12, 1));
+        death.setEndDate(LocalDate.of(2020, 12, 1));
         death.setPerson(john);
 
-        Date newDate = new Date(1998, Calendar.NOVEMBER, 30);
+        LocalDate newDate = LocalDate.of(1998, 11, 30);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "DEATH";
         inputDto.description = "Date of Death";
@@ -956,19 +956,19 @@ class EventServiceTest {
         birth.setId(30);
         birth.setEventType("BIRTH");
         birth.setDescription("Birthday");
-        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setBeginDate(LocalDate.of(2000, 1, 1));
+        birth.setEndDate(LocalDate.of(2000, 1, 1));
         birth.setPerson(john);
 
         Event others = new Event();
         others.setId(31);
         others.setEventType("OTHERS");
         others.setDescription("Other event");
-        others.setBeginDate(new Date(2020, Calendar.DECEMBER, 1));
-        others.setEndDate(new Date(2020, Calendar.DECEMBER, 1));
+        others.setBeginDate(LocalDate.of(2020, 12, 1));
+        others.setEndDate(LocalDate.of(2020, 12, 1));
         others.setPerson(john);
 
-        Date newDate = new Date(2018, Calendar.NOVEMBER, 30);
+        LocalDate newDate = LocalDate.of(2018, 11, 30);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "DEATH";
         inputDto.description = "Date of Death";
@@ -1002,19 +1002,19 @@ class EventServiceTest {
         birth.setId(30);
         birth.setEventType("BIRTH");
         birth.setDescription("Birthday");
-        birth.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        birth.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        birth.setBeginDate(LocalDate.of(2000, 1, 1));
+        birth.setEndDate(LocalDate.of(2000, 1, 1));
         birth.setPerson(john);
 
         Event death = new Event();
         death.setId(31);
         death.setEventType("DEATH");
         death.setDescription("Date of Death");
-        death.setBeginDate(new Date(2018, Calendar.DECEMBER, 1));
-        death.setEndDate(new Date(2018, Calendar.DECEMBER, 1));
+        death.setBeginDate(LocalDate.of(2018, 12, 1));
+        death.setEndDate(LocalDate.of(2018, 12, 1));
         death.setPerson(john);
 
-        Date newDate = new Date(2020, Calendar.NOVEMBER, 30);
+        LocalDate newDate = LocalDate.of(2020, 11, 30);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "OTHERS";
         inputDto.description = "Other event";
@@ -1048,20 +1048,20 @@ class EventServiceTest {
         others.setId(30);
         others.setEventType("OTHERS");
         others.setDescription("Other event");
-        others.setBeginDate(new Date(2000, Calendar.JANUARY, 1));
-        others.setEndDate(new Date(2000, Calendar.JANUARY, 1));
+        others.setBeginDate(LocalDate.of(2000, 1, 1));
+        others.setEndDate(LocalDate.of(2000, 1, 1));
         others.setPerson(john);
 
         Event AnOther = new Event();
         AnOther.setId(30);
         AnOther.setEventType("OTHERS");
         AnOther.setDescription("Other event");
-        AnOther.setBeginDate(new Date(2005, Calendar.JANUARY, 1));
-        AnOther.setEndDate(new Date(2005, Calendar.JANUARY, 1));
+        AnOther.setBeginDate(LocalDate.of(2005, 1, 1));
+        AnOther.setEndDate(LocalDate.of(2005, 1, 1));
         AnOther.setPerson(john);
 
 
-        Date newDate = new Date(2006, Calendar.NOVEMBER, 30);
+        LocalDate newDate = LocalDate.of(2006, 11, 30);
         EventInputDto inputDto = new EventInputDto();
         inputDto.eventType = "BIRTH";
         inputDto.description = "Date of Birth";
@@ -1085,7 +1085,7 @@ class EventServiceTest {
 
     @Test
     void testUpdateEventFromRelation() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -1103,7 +1103,7 @@ class EventServiceTest {
         relation.setId(60);
         relation.setPerson(john);
         relation.setSpouse(jane);
-        relation.setChildren(new HashSet<Child>());
+        relation.setChildren(new HashSet<>());
         relation.setEvents(null);
 
         Event event = new Event();
@@ -1149,14 +1149,14 @@ class EventServiceTest {
         assertEquals("Testing", dto.text);
         assertEquals(date, dto.beginDate);
         assertEquals(date, dto.endDate);
-        assertEquals(null, dto.personId);
+        assertNull(dto.personId);
         assertEquals(60, dto.relationId);
 
     }
 
     @Test
     void testUpdateEventFromRelationInvalidEventType() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -1209,7 +1209,7 @@ class EventServiceTest {
 
     @Test
     void testDeleteEventFromPerson() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);
@@ -1252,7 +1252,7 @@ class EventServiceTest {
 
     @Test
     void testDeleteEventFromRelation() {
-        Date date = new Date(2023, Calendar.MAY, 1);
+        LocalDate date = LocalDate.of(2023, 5, 1);
 
         Person john = new Person();
         john.setId(11);

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class EventInputDto {
@@ -17,10 +18,10 @@ public class EventInputDto {
     public String text;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    public Date beginDate;
+    public LocalDate beginDate;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    public Date endDate;
+    public LocalDate endDate;
     public Integer personId;
     public Integer relationId;
 }

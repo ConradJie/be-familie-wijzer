@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -155,13 +156,14 @@ class EventControllerTest {
 
     @Test
     void testGetEventFromPerson() throws Exception {
+        LocalDate date = LocalDate.of(2000, 1, 1);
         EventDto dto = new EventDto();
         dto.id = 30;
         dto.eventType = "OTHERS";
         dto.description = "Test";
         dto.text = "Testing";
-        dto.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        dto.endDate = new Date(2000, Calendar.JANUARY, 1);
+        dto.beginDate = date;
+        dto.endDate = date;
         dto.personId = 11;
         dto.relationId = null;
 
@@ -175,8 +177,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("OTHERS")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Test")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Testing")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3899-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3899-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2000-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2000-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", is(11)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", IsNull.nullValue()));
     }
@@ -188,8 +190,8 @@ class EventControllerTest {
         dto.eventType = "OTHERS";
         dto.description = "Test";
         dto.text = "Testing";
-        dto.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        dto.endDate = new Date(2000, Calendar.JANUARY, 1);
+        dto.beginDate = LocalDate.of(2000, 1, 1);
+        dto.endDate = LocalDate.of(2000, 1, 1);
         dto.personId = null;
         dto.relationId = 60;
 
@@ -202,8 +204,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("OTHERS")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Test")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Testing")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3899-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3899-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2000-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2000-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", is(60)));
 
@@ -216,8 +218,8 @@ class EventControllerTest {
         birth.eventType = "BIRTH";
         birth.description = "Day of Birth";
         birth.text = "Hurrah";
-        birth.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        birth.endDate = new Date(2000, Calendar.JANUARY, 1);
+        birth.beginDate = LocalDate.of(2000, 1, 1);
+        birth.endDate = LocalDate.of(2000, 1, 1);
         birth.personId = 11;
         birth.relationId = null;
 
@@ -226,8 +228,8 @@ class EventControllerTest {
         others.eventType = "OTHERS";
         others.description = "Test";
         others.text = "Testing";
-        others.beginDate = new Date(2001, Calendar.JANUARY, 1);
-        others.endDate = new Date(2001, Calendar.JANUARY, 1);
+        others.beginDate = LocalDate.of(2001, 1, 1);
+        others.endDate = LocalDate.of(2001, 1, 1);
         others.personId = 11;
         others.relationId = null;
 
@@ -245,16 +247,16 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].eventType", is("BIRTH")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", is("Day of Birth")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].text", is("Hurrah")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("3899-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("3899-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("2000-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("2000-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", is(11)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].relationId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", is(31)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].eventType", is("OTHERS")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].description", is("Test")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].text", is("Testing")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("3900-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("3900-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("2001-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("2001-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].personId", is(11)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].relationId", IsNull.nullValue()));
     }
@@ -266,8 +268,8 @@ class EventControllerTest {
         marriage.eventType = "MARRIAGE";
         marriage.description = "Marriage";
         marriage.text = "Wedding";
-        marriage.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        marriage.endDate = new Date(2000, Calendar.JANUARY, 1);
+        marriage.beginDate = LocalDate.of(2000, 1, 1);
+        marriage.endDate = LocalDate.of(2000, 1, 1);
         marriage.personId = null;
         marriage.relationId = 60;
 
@@ -276,8 +278,8 @@ class EventControllerTest {
         others.eventType = "DIVORCE";
         others.description = "Divorce";
         others.text = "Seperation";
-        others.beginDate = new Date(2020, Calendar.JANUARY, 1);
-        others.endDate = new Date(2020, Calendar.JANUARY, 1);
+        others.beginDate = LocalDate.of(2020, 1, 1);
+        others.endDate = LocalDate.of(2020, 1, 1);
         others.personId = null;
         others.relationId = 60;
 
@@ -295,16 +297,16 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].eventType", is("MARRIAGE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", is("Marriage")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].text", is("Wedding")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("3899-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("3899-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("2000-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("2000-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].relationId", is(60)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", is(31)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].eventType", is("DIVORCE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].description", is("Divorce")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].text", is("Seperation")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].relationId", is(60)));
     }
@@ -316,8 +318,8 @@ class EventControllerTest {
         marriage.eventType = "MARRIAGE";
         marriage.description = "Marriage";
         marriage.text = "Wedding";
-        marriage.beginDate = new Date(2000, Calendar.JANUARY, 1);
-        marriage.endDate = new Date(2000, Calendar.JANUARY, 1);
+        marriage.beginDate = LocalDate.of(2000, 1, 1);
+        marriage.endDate = LocalDate.of(2000, 1, 1);
         marriage.personId = null;
         marriage.relationId = 60;
 
@@ -326,8 +328,8 @@ class EventControllerTest {
         others.eventType = "DIVORCE";
         others.description = "Divorce";
         others.text = "Seperation";
-        others.beginDate = new Date(2020, Calendar.JANUARY, 1);
-        others.endDate = new Date(2020, Calendar.JANUARY, 1);
+        others.beginDate = LocalDate.of(2020, 1, 1);
+        others.endDate = LocalDate.of(2020, 1, 1);
         others.personId = null;
         others.relationId = 60;
 
@@ -345,16 +347,16 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].eventType", is("MARRIAGE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", is("Marriage")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].text", is("Wedding")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("3899-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("3899-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].beginDate", is("2000-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].endDate", is("2000-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].relationId", is(60)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", is(31)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].eventType", is("DIVORCE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].description", is("Divorce")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].text", is("Seperation")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].relationId", is(60)));
     }
@@ -366,7 +368,7 @@ class EventControllerTest {
         dto.eventType = "BIRTH";
         dto.description = "Birthday";
         dto.text = "";
-        dto.date = new Date(2020, Calendar.MAY, 1);
+        dto.date = LocalDate.of(2020, 5, 1);
         dto.personId = 11;
         dto.relationId = null;
         dto.givenNames = "John";
@@ -386,7 +388,7 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].eventType", is("BIRTH")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", is("Birthday")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].text", is("")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date", is("3920-04-30T22:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date", is("2020-05-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].givenNames", is("John")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].surname", is("Doe")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].spouseGivenNames", is("")))
@@ -410,7 +412,7 @@ class EventControllerTest {
                         }
                 """;
 
-        Date date = new Date(2020, Calendar.JANUARY, 1);
+        LocalDate date = LocalDate.of(2020, 1, 1);
         EventDto dto = new EventDto();
         dto.id = 30;
         dto.eventType = "BIRTH";
@@ -434,8 +436,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("BIRTH")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Day of Birth")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Hurrah")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", is(11)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", IsNull.nullValue()));
     }
@@ -455,7 +457,7 @@ class EventControllerTest {
                         }
                 """;
 
-        Date date = new Date(2020, Calendar.JANUARY, 1);
+        LocalDate date = LocalDate.of(2020, 1, 1);
         EventDto dto = new EventDto();
         dto.id = 60;
         dto.eventType = "MARRIAGE";
@@ -479,8 +481,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("MARRIAGE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Marriage")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Wedding")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", is(60)));
     }
@@ -500,7 +502,7 @@ class EventControllerTest {
                         }
                 """;
 
-        Date date = new Date(2020, Calendar.JANUARY, 1);
+        LocalDate date = LocalDate.of(2020, 1, 1);
         EventDto dto = new EventDto();
         dto.id = 30;
         dto.eventType = "BIRTH";
@@ -524,8 +526,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("BIRTH")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Day of Birth")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Hurrah")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", is(11)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", IsNull.nullValue()));
     }
@@ -545,7 +547,7 @@ class EventControllerTest {
                         }
                 """;
 
-        Date date = new Date(2020, Calendar.JANUARY, 1);
+        LocalDate date = LocalDate.of(2020, 1, 1);
         EventDto dto = new EventDto();
         dto.id = 60;
         dto.eventType = "MARRIAGE";
@@ -569,8 +571,8 @@ class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.eventType", is("MARRIAGE")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description", is("Marriage")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text", is("Wedding")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("3919-12-31T23:00:00.000+00:00")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("3919-12-31T23:00:00.000+00:00")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.beginDate", is("2020-01-01")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.endDate", is("2020-01-01")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.personId", IsNull.nullValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.relationId", is(60)));
     }
