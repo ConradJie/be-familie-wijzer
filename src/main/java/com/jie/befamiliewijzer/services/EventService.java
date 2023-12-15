@@ -299,6 +299,7 @@ public class EventService {
         dto.text = event.getText();
         dto.beginDate = event.getBeginDate();
         dto.endDate = event.getEndDate();
+        dto.dateText = event.getDateText();
         if (event.getPerson() != null) {
             dto.personId = event.getPerson().getId();
         }
