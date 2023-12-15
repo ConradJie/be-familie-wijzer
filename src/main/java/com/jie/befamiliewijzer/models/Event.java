@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
 @Entity
@@ -75,7 +76,7 @@ public class Event {
                 this.beginDate.getDayOfMonth() == this.endDate.getDayOfMonth()?
                         this.beginDate.getDayOfMonth() : "",
                 this.beginDate.getMonth() == this.endDate.getMonth()?
-                        this.beginDate.getMonth() : "",
+                        this.beginDate.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) : "",
                 this.beginDate.getYear() == this.endDate.getYear()?
                         this.beginDate.getYear() : "").trim();
     }
