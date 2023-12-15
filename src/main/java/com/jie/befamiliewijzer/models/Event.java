@@ -3,6 +3,7 @@ package com.jie.befamiliewijzer.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -18,9 +19,9 @@ public class Event {
     @Column(length = 10240)
     private String text;
     @Column(name = "begin_date")
-    private Date beginDate;
+    private LocalDate beginDate;
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id")
     Person person;
@@ -49,11 +50,11 @@ public class Event {
         return text;
     }
 
-    public Date getBeginDate() {
+    public LocalDate getBeginDate() {
         return beginDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
@@ -70,20 +71,13 @@ public class Event {
     }
 
     public String getDateText() {
-        String[] monthText = {
-                "Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        };
-        Calendar calendarBegin = Calendar.getInstance();
-        Calendar calendarEnd = Calendar.getInstance();
-        calendarBegin.setTime(this.beginDate);
-        calendarEnd.setTime(this.endDate);
         return String.format("%s %s %s",
-                calendarBegin.get(Calendar.DAY_OF_MONTH) == calendarEnd.get(Calendar.DAY_OF_MONTH) ?
-                        calendarBegin.get(Calendar.DAY_OF_MONTH) : "",
-                calendarBegin.get(Calendar.MONTH) == calendarEnd.get(Calendar.MONTH) ?
-                        monthText[calendarBegin.get(Calendar.MONTH)] : "",
-                calendarBegin.get(Calendar.YEAR) == calendarEnd.get(Calendar.YEAR) ?
-                        calendarBegin.get(Calendar.YEAR) : "").trim();
+                this.beginDate.getDayOfMonth() == this.endDate.getDayOfMonth()?
+                        this.beginDate.getDayOfMonth() : "",
+                this.beginDate.getMonth() == this.endDate.getMonth()?
+                        this.beginDate.getMonth() : "",
+                this.beginDate.getYear() == this.endDate.getYear()?
+                        this.beginDate.getYear() : "").trim();
     }
 
     public void setId(Integer id) {
@@ -102,11 +96,11 @@ public class Event {
         this.text = text;
     }
 
-    public void setBeginDate(Date beginDate) {
+    public void setBeginDate(LocalDate beginDate) {
         this.beginDate = beginDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

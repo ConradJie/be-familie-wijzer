@@ -14,6 +14,7 @@ import com.jie.befamiliewijzer.repositories.PersonRepository;
 import com.jie.befamiliewijzer.repositories.RelationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -185,7 +186,7 @@ public class EventService {
         if (!Event.getPersonEventTypes().contains(dto.eventType.toUpperCase())) {
             throw new UnprocessableEntityException("The event type could not be processed");
         }
-        if (dto.beginDate.compareTo(dto.endDate) > 0) {
+        if (dto.beginDate.isAfter(dto.endDate)) {
             throw new UnprocessableEntityException("The begin date occurred after the end date");
         }
         if (Event.getPersonOneTimeEventTypes().contains(dto.eventType)) {
@@ -202,28 +203,28 @@ public class EventService {
         if (personEvents.size() > 0) {
             boolean birth = personEvents.get(0).getEventType().equals("BIRTH");
             boolean selfBeginOfPeriod = personEvents.get(0).getId().equals(eventId);
-            Date beginOfPeriod = personEvents.get(0).getBeginDate();
-            Date beginOfPeriodNext = personEvents.get(Math.min(1, personEvents.size() - 1)).getBeginDate();
+            LocalDate beginOfPeriod = personEvents.get(0).getBeginDate();
+            LocalDate beginOfPeriodNext = personEvents.get(Math.min(1, personEvents.size() - 1)).getBeginDate();
             Integer beginOfPeriodNextId = personEvents.get(Math.min(1, personEvents.size() - 1)).getId();
 
             boolean death = personEvents.get(personEvents.size() - 1).getEventType().equals("DEATH");
             boolean selfEndOfPeriod = personEvents.get(personEvents.size() - 1).getId().equals(eventId);
-            Date endOfPeriod = personEvents.get(personEvents.size() - 1).getEndDate();
-            Date endOfPeriodPrev = personEvents.get(Math.max(0, personEvents.size() - 2)).getEndDate();
+            LocalDate endOfPeriod = personEvents.get(personEvents.size() - 1).getEndDate();
+            LocalDate endOfPeriodPrev = personEvents.get(Math.max(0, personEvents.size() - 2)).getEndDate();
             Integer endOfPeriodPrevId = personEvents.get(Math.max(0, personEvents.size() - 2)).getId();
 
-            if (birth && !selfBeginOfPeriod && beginOfPeriod.compareTo(dto.endDate) > 0) {
+            if (birth && !selfBeginOfPeriod && beginOfPeriod.isAfter(dto.endDate)) {
                 throw new UnprocessableEntityException("The event occurred before the date of birth");
             } else if (dto.eventType.equals("DEATH")
-                    && (dto.endDate.compareTo(beginOfPeriod) < 0
-                    || (dto.endDate.compareTo(beginOfPeriodNext) < 0 && !Objects.equals(eventId, beginOfPeriodNextId)))) {
+                    && (dto.endDate.isBefore(beginOfPeriod)
+                    || (dto.endDate.isBefore(beginOfPeriodNext) && !Objects.equals(eventId, beginOfPeriodNextId)))) {
                 throw new UnprocessableEntityException("The date of death occurs before previous events");
             }
-            if (death && !selfEndOfPeriod && endOfPeriod.compareTo(dto.beginDate) < 0) {
+            if (death && !selfEndOfPeriod && endOfPeriod.isBefore(dto.beginDate)) {
                 throw new UnprocessableEntityException("The event occurs after the date of death");
             } else if (dto.eventType.equals("BIRTH")
-                    && dto.beginDate.compareTo(endOfPeriod) > 0
-                    && (dto.beginDate.compareTo(endOfPeriodPrev) > 0 && !Objects.equals(eventId, endOfPeriodPrevId))) {
+                    && dto.beginDate.isAfter(endOfPeriod)
+                    && (dto.beginDate.isAfter(endOfPeriodPrev) && !Objects.equals(eventId, endOfPeriodPrevId))) {
                 throw new UnprocessableEntityException("The date of birth occurs after previous events");
             }
         }

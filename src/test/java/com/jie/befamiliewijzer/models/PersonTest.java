@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,8 +59,8 @@ class PersonTest {
         event.setEventType("BIRTH");
         event.setDescription("Birthday");
         event.setText("Hurrah");
-        event.setBeginDate(new Date(2023, 11, 1));
-        event.setEndDate(new Date(2023, 11, 1));
+        event.setBeginDate(LocalDate.of(2023, 11, 1));
+        event.setEndDate(LocalDate.of(2023, 11, 1));
         Set<Event> events = new HashSet<>();
         events.add(event);
 
