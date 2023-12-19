@@ -122,6 +122,8 @@ public class PersonService {
         if (!Person.getSexTypes().contains(dto.sex.toUpperCase())) {
             throw new UnprocessableEntityException("The sex type could not be processed");
         }
+        dto.givenNames = dto.givenNames.trim();
+        dto.surname = dto.surname.trim();
         if (personRepository.existsByGivenNamesAndSurnameAndSex(dto.givenNames, dto.surname, dto.sex)) {
             throw new UnprocessableEntityException
                     ("There already exists such a person with the same given names and surname and gender");
