@@ -75,6 +75,13 @@ public class ChildService {
         if (childRepository.existsByRelation_IdAndPersonId(relationId, dto.personId)) {
             throw new ResourceNotFoundException("This child already exists");
         }
+        Optional<Child> childOptional = childRepository.findByPersonId(dto.personId);
+        if (childOptional.isPresent()) {
+            Child child = childOptional.get();
+            if (child.getRelation().getId() != dto.relationId) {
+                throw new UnprocessableEntityException("This child already has parents");
+            }
+        }
         Child child = transfer(dto);
         childRepository.save(child);
         return transfer(child);
