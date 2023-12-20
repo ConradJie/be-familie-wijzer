@@ -41,10 +41,10 @@ public class RelationService {
 
     public RelationDto getRelationByPersonIdAndSpouseId(Integer personId, Integer spouseId) {
         if (!personRepository.existsById(personId)) {
-            throw new ResourceNotFoundException("The person do not exists");
+            throw new ResourceNotFoundException("The person does not exists");
         }
         if (!personRepository.existsById(spouseId)) {
-            throw new ResourceNotFoundException("The spouse do not exists");
+            throw new ResourceNotFoundException("The spouse does not exists");
         }
         Relation relation = relationRepository
                 .findByPersonIdAndSpouseId(personId, spouseId)

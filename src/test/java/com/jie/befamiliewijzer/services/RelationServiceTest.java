@@ -136,7 +136,7 @@ class RelationServiceTest {
         ResourceNotFoundException thrown = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             relationService.getRelationByPersonIdAndSpouseId(11, 12);
         });
-        Assertions.assertEquals("The spouse do not exists", thrown.getMessage());
+        Assertions.assertEquals("The spouse does not exists", thrown.getMessage());
 
     }
 
@@ -146,7 +146,7 @@ class RelationServiceTest {
         ResourceNotFoundException thrown = Assertions.assertThrows(ResourceNotFoundException.class, () -> {
             relationService.getRelationByPersonIdAndSpouseId(11, 12);
         });
-        Assertions.assertEquals("The person do not exists", thrown.getMessage());
+        Assertions.assertEquals("The person does not exists", thrown.getMessage());
 
     }
 
