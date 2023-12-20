@@ -151,6 +151,9 @@ public class EventService {
     }
 
     public EventDto createEventFromPerson(Integer personId, EventInputDto dto) {
+        if (dto.beginDate.isAfter(LocalDate.now()) || dto.endDate.isAfter(LocalDate.now())) {
+            throw new UnprocessableEntityException("This event is in the future");
+        }
         Person person = personRepository
                 .findById(personId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
@@ -169,6 +172,9 @@ public class EventService {
 
 
     public EventDto createEventFromRelation(Integer relationId, EventInputDto dto) {
+        if (dto.beginDate.isAfter(LocalDate.now()) || dto.endDate.isAfter(LocalDate.now())) {
+            throw new UnprocessableEntityException("This event is in the future");
+        }
         Relation relation = relationRepository
                 .findById(relationId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
@@ -231,6 +237,9 @@ public class EventService {
     }
 
     public EventDto updateEventFromPerson(Integer personId, Integer id, EventInputDto dto) {
+        if (dto.beginDate.isAfter(LocalDate.now()) || dto.endDate.isAfter(LocalDate.now())) {
+            throw new UnprocessableEntityException("This event is in the future");
+        }
         Person person = personRepository
                 .findById(personId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
@@ -249,6 +258,9 @@ public class EventService {
     }
 
     public EventDto updateEventFromRelation(Integer relationId, Integer id, EventInputDto dto) {
+        if (dto.beginDate.isAfter(LocalDate.now()) || dto.endDate.isAfter(LocalDate.now())) {
+            throw new UnprocessableEntityException("This event is in the future");
+        }
         Relation relation = relationRepository
                 .findById(relationId)
                 .orElseThrow(() -> new ResourceNotFoundException("The requested relation could not be found"));
