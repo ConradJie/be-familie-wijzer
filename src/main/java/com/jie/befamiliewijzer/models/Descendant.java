@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.hibernate.annotations.Immutable;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @Entity(name = "descendants")
 @Immutable
@@ -19,13 +21,13 @@ public class Descendant {
     @Column(name = "relation_child")
     private Integer relationChild;
     @Column(name = "marriage_begin_date")
-    private Date marriageBeginDate;
+    private LocalDate marriageBeginDate;
     @Column(name = "marriage_end_date")
-    private Date marriageEndDate;
+    private LocalDate marriageEndDate;
     @Column(name = "divorce_begin_date")
-    private Date divorceBeginDate;
+    private LocalDate divorceBeginDate;
     @Column(name = "divorce_end_date")
-    private Date divorceEndDate;
+    private LocalDate divorceEndDate;
     @Column(name = "person_id")
     private Integer personId;
     @Column(name = "given_names", length = 120)
@@ -33,13 +35,13 @@ public class Descendant {
     @Column(length = 120)
     private String surname;
     @Column(name = "birth_begin_date")
-    private Date birthBeginDate;
+    private LocalDate birthBeginDate;
     @Column(name = "birth_end_date")
-    private Date birthEndDate;
+    private LocalDate birthEndDate;
     @Column(name = "death_begin_date")
-    private Date deathBeginDate;
+    private LocalDate deathBeginDate;
     @Column(name = "death_end_date")
-    private Date deathEndDate;
+    private LocalDate deathEndDate;
     @Column(name = "spouse_id")
     private Integer spouseId;
     @Column(name = "spouse_given_names", length = 120)
@@ -48,13 +50,13 @@ public class Descendant {
     private String spouseSurname;
 
     @Column(name = "spouse_birth_begin_date")
-    private Date spouseBirthBeginDate;
+    private LocalDate spouseBirthBeginDate;
     @Column(name = "spouse_birth_end_date")
-    private Date spouseBirthEndDate;
+    private LocalDate spouseBirthEndDate;
     @Column(name = "spouse_death_begin_date")
-    private Date spouseDeathBeginDate;
+    private LocalDate spouseDeathBeginDate;
     @Column(name = "spouse_death_End_date")
-    private Date spouseDeathEndDate;
+    private LocalDate spouseDeathEndDate;
 
     public String getId() {
         return id;
@@ -72,19 +74,19 @@ public class Descendant {
         return relationChild;
     }
 
-    public Date getMarriageBeginDate() {
+    public LocalDate getMarriageBeginDate() {
         return marriageBeginDate;
     }
 
-    public Date getMarriageEndDate() {
+    public LocalDate getMarriageEndDate() {
         return marriageEndDate;
     }
 
-    public Date getDivorceBeginDate() {
+    public LocalDate getDivorceBeginDate() {
         return divorceBeginDate;
     }
 
-    public Date getDivorceEndDate() {
+    public LocalDate getDivorceEndDate() {
         return divorceEndDate;
     }
 
@@ -100,19 +102,19 @@ public class Descendant {
         return surname;
     }
 
-    public Date getBirthBeginDate() {
+    public LocalDate getBirthBeginDate() {
         return birthBeginDate;
     }
 
-    public Date getBirthEndDate() {
+    public LocalDate getBirthEndDate() {
         return birthEndDate;
     }
 
-    public Date getDeathBeginDate() {
+    public LocalDate getDeathBeginDate() {
         return deathBeginDate;
     }
 
-    public Date getDeathEndDate() {
+    public LocalDate getDeathEndDate() {
         return deathEndDate;
     }
 
@@ -128,19 +130,32 @@ public class Descendant {
         return spouseSurname;
     }
 
-    public Date getSpouseBirthBeginDate() {
+    public LocalDate getSpouseBirthBeginDate() {
         return spouseBirthBeginDate;
     }
 
-    public Date getSpouseBirthEndDate() {
+    public LocalDate getSpouseBirthEndDate() {
         return spouseBirthEndDate;
     }
 
-    public Date getSpouseDeathBeginDate() {
+    public LocalDate getSpouseDeathBeginDate() {
         return spouseDeathBeginDate;
     }
 
-    public Date getSpouseDeathEndDate() {
+    public LocalDate getSpouseDeathEndDate() {
         return spouseDeathEndDate;
+    }
+
+    public String getDateText(LocalDate beginDate, LocalDate endDate) {
+        if (beginDate == null) {
+            return "";
+        }
+        return String.format("%s %s %s",
+                beginDate.getDayOfMonth() == endDate.getDayOfMonth() ?
+                        beginDate.getDayOfMonth() : "",
+                beginDate.getMonth() == endDate.getMonth() ?
+                        beginDate.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) : "",
+                beginDate.getYear() == endDate.getYear() ?
+                        beginDate.getYear() : "").trim();
     }
 }
