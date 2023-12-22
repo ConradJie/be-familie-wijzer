@@ -6,9 +6,7 @@ import com.jie.befamiliewijzer.models.Descendant;
 import com.jie.befamiliewijzer.repositories.DescendantRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,25 +31,25 @@ public class DescendantService {
         dto.level = descendant.getLevel();
         dto.relationParent = descendant.getRelationParent();
         dto.relationChild = descendant.getRelationChild();
-        String divorce = datesToString(descendant.getDivorceBeginDate(), descendant.getDivorceEndDate());
+        String divorce = descendant.getDateText(descendant.getDivorceBeginDate(), descendant.getDivorceEndDate());
         dto.relationPeriod = String.format("%s%s%s",
-                datesToString(descendant.getMarriageBeginDate(), descendant.getMarriageEndDate()),
+                descendant.getDateText(descendant.getMarriageBeginDate(), descendant.getMarriageEndDate()),
                 divorce.equals("") ? "" : " / ",
                 divorce);
         dto.personId = descendant.getPersonId();
         dto.givenNames = descendant.getGivenNames();
         dto.surname = descendant.getSurname();
-        String deathDate = datesToString(descendant.getDeathBeginDate(), descendant.getDeathEndDate());
+        String deathDate = descendant.getDateText(descendant.getDeathBeginDate(), descendant.getDeathEndDate());
         dto.lifePeriod = String.format("%s%s%s",
-                datesToString(descendant.getBirthBeginDate(), descendant.getBirthEndDate()),
+                descendant.getDateText(descendant.getBirthBeginDate(), descendant.getBirthEndDate()),
                 deathDate.equals("") ? "" : " / ",
                 deathDate);
         dto.spouseId = descendant.getSpouseId();
         dto.spouseGivenNames = descendant.getSpouseGivenNames();
         dto.spouseSurname = descendant.getSpouseSurname();
-        deathDate = datesToString(descendant.getSpouseDeathBeginDate(), descendant.getSpouseDeathEndDate());
+        deathDate = descendant.getDateText(descendant.getSpouseDeathBeginDate(), descendant.getSpouseDeathEndDate());
         dto.spouseLifePeriod = String.format("%s%s%s",
-                datesToString(descendant.getSpouseBirthBeginDate(), descendant.getSpouseBirthEndDate()),
+                descendant.getDateText(descendant.getSpouseBirthBeginDate(), descendant.getSpouseBirthEndDate()),
                 deathDate.equals("") ? "" : " / ",
                 deathDate);
         return dto;
@@ -65,32 +63,6 @@ public class DescendantService {
             }
         }
         return dtos;
-    }
-
-    private String datesToString(Date beginDate, Date endDate) {
-        if (beginDate == null) {
-            return "";
-        }
-        LocalDate begin = new java.sql.Date(beginDate.getTime()).toLocalDate();
-        LocalDate end = new java.sql.Date(endDate.getTime()).toLocalDate();
-
-        StringBuilder date = new StringBuilder();
-        if (begin.getDayOfMonth() == end.getDayOfMonth()) {
-            date.append(begin.getDayOfMonth());
-        }
-        if (begin.getMonthValue() == end.getMonthValue()) {
-            if (!date.isEmpty()) {
-                date.append("-");
-            }
-            date.append(begin.getMonthValue());
-        }
-        if (begin.getYear() == end.getYear()) {
-            if (!date.isEmpty()) {
-                date.append("-");
-            }
-            date.append(begin.getYear());
-        }
-        return date.toString();
     }
 
 }
