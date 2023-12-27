@@ -592,6 +592,25 @@ class EventServiceTest {
     }
 
     @Test
+    void testCreateEventFromPersonInFuture() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "OTHERS";
+        inputDto.description = "Tomrrow";
+        inputDto.text = "Tomrrow";
+        inputDto.beginDate = tomorrow;
+        inputDto.endDate = tomorrow;
+        inputDto.personId = 11;
+        inputDto.relationId = null;
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromPerson(11, inputDto);
+        });
+
+        Assertions.assertEquals("This event is in the future", thrown.getMessage());
+    }
+
+    @Test
     void testCreateEventFromRelation() {
         LocalDate date = LocalDate.of(2023, 5, 1);
 
@@ -693,6 +712,26 @@ class EventServiceTest {
     }
 
     @Test
+    void testCreateEventFromRelationInFuture() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "MARRIAGE";
+        inputDto.description = "Tomorrow";
+        inputDto.text = "Tomorrow";
+        inputDto.beginDate = tomorrow;
+        inputDto.endDate = tomorrow;
+        inputDto.personId = null;
+        inputDto.relationId = 60;
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.createEventFromRelation(60, inputDto);
+        });
+
+        Assertions.assertEquals("This event is in the future", thrown.getMessage());
+
+    }
+
+    @Test
     void testUpdateEventFromPerson() {
         LocalDate date = LocalDate.of(2023, 5, 1);
 
@@ -748,6 +787,25 @@ class EventServiceTest {
         assertEquals(11, dto.personId);
         assertNull(dto.relationId);
 
+    }
+
+    @Test
+    void testUpdateEventFromPersonInFuture() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "OTHERS";
+        inputDto.description = "Tomorrow";
+        inputDto.text = "Tomorrow";
+        inputDto.beginDate = tomorrow;
+        inputDto.endDate = tomorrow;
+        inputDto.personId = 11;
+        inputDto.relationId = null;
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.updateEventFromPerson(60, 30, inputDto);
+        });
+
+        Assertions.assertEquals("This event is in the future", thrown.getMessage());
     }
 
     @Test
@@ -1205,6 +1263,25 @@ class EventServiceTest {
 
         Assertions.assertEquals("The event type could not be processed", thrown.getMessage());
 
+    }
+
+    @Test
+    void testUpdateEventFromRelationInFuture() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        EventInputDto inputDto = new EventInputDto();
+        inputDto.eventType = "WRONG";
+        inputDto.description = "Tomrrow";
+        inputDto.text = "Tomrrow";
+        inputDto.beginDate = tomorrow;
+        inputDto.endDate = tomorrow;
+        inputDto.personId = null;
+        inputDto.relationId = 60;
+
+        UnprocessableEntityException thrown = Assertions.assertThrows(UnprocessableEntityException.class, () -> {
+            EventDto dto = eventService.updateEventFromRelation(60, 30, inputDto);
+        });
+
+        Assertions.assertEquals("This event is in the future", thrown.getMessage());
     }
 
     @Test
