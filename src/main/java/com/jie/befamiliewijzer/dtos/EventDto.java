@@ -1,7 +1,6 @@
 package com.jie.befamiliewijzer.dtos;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class EventDto {
     public Integer id;
