@@ -66,7 +66,6 @@ public class SpringSecurityConfig {
                                         .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                                        /*TODO voeg de requestmatchers toe voor admin(post en delete) en user (overige)*/
                                         .requestMatchers(HttpMethod.GET,"/users/**").hasAnyRole("ADMIN","USER")
                                         .requestMatchers(HttpMethod.POST,"/persons").hasRole("ADMIN")
                                         .requestMatchers(HttpMethod.PUT,"/persons/**").hasRole("ADMIN")

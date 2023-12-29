@@ -3,25 +3,30 @@ package com.jie.befamiliewijzer.services;
 import com.jie.befamiliewijzer.dtos.DescendantDto;
 import com.jie.befamiliewijzer.exceptions.ResourceNotFoundException;
 import com.jie.befamiliewijzer.models.Descendant;
+import com.jie.befamiliewijzer.models.Person;
 import com.jie.befamiliewijzer.repositories.DescendantRepository;
+import com.jie.befamiliewijzer.repositories.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DescendantService {
     private final DescendantRepository descendantRepository;
+    private final PersonRepository personRepository;
 
-    DescendantService(DescendantRepository descendantRepository) {
+    DescendantService(DescendantRepository descendantRepository, PersonRepository personRepository) {
         this.descendantRepository = descendantRepository;
+        this.personRepository = personRepository;
     }
 
     public List<DescendantDto> findDescendantsById(Integer id) {
+        Person person = personRepository
+                .findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("The requested person could not be found"));
         List<Descendant> descendants = descendantRepository.findDescendantsById(id);
-        if (descendants.isEmpty()) {
-            throw new ResourceNotFoundException("The requested descendant could not be found");
-        }
         return transfer(descendants);
     }
 
@@ -58,7 +63,7 @@ public class DescendantService {
     private List<DescendantDto> transfer(List<Descendant> descendants) {
         List<DescendantDto> dtos = new ArrayList<>();
         for (Descendant descendant : descendants) {
-            if (descendant!= null) {
+            if (descendant != null) {
                 dtos.add(transfer(descendant));
             }
         }
