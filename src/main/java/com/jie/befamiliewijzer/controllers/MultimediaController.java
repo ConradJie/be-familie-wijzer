@@ -4,7 +4,6 @@ import com.jie.befamiliewijzer.dtos.MultimediaBlobDto;
 import com.jie.befamiliewijzer.dtos.MultimediaDto;
 import com.jie.befamiliewijzer.dtos.MultimediaInputDto;
 import com.jie.befamiliewijzer.dtos.MultimediaNoMediaDto;
-import com.jie.befamiliewijzer.models.Media;
 import com.jie.befamiliewijzer.services.MediaService;
 import com.jie.befamiliewijzer.services.MultimediaService;
 import jakarta.validation.Valid;
