@@ -442,12 +442,6 @@ class PersonServiceTest {
         john.setSurname("Doe");
         john.setSex("M");
 
-//        Person jones = new Person();
-//        jones.setId(12);
-//        jones.setGivenNames("Jones");
-//        jones.setSurname("Doe");
-//        jones.setSex("M");
-
         PersonInputDto inputDto = new PersonInputDto();
         inputDto.givenNames = "Jones";
         inputDto.surname = "Doe";
